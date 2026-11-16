@@ -1,0 +1,473 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Sweet Layers</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=DM+Sans:wght@400;600&family=Space+Mono:wght@400;700&family=Caveat:wght@700&family=Cairo:wght@400;600;700&family=Aref+Ruqaa:wght@700&family=Dancing+Script:wght@700&family=Yellowtail&family=Great+Vibes&family=Lalezar&family=Amiri:wght@700&family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--rose:#d9668b;--ink:#3b1f1a;--k:1;padding-top:env(safe-area-inset-top,0px);box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;font:15px 'DM Sans',sans-serif;color:var(--ink);overflow-x:hidden;
+background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.005 .014' numOctaves='5' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .48 0 0 0 0 .52 0 0 0 -7 3.4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),radial-gradient(ellipse at 30% 0,#fffafa,#fbe6ec 60%,#f3cfdb)}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:16px 26px}
+.logo{font:600 34px Fredoka;color:#d96a8c;-webkit-text-stroke:6px #fff3e0;paint-order:stroke fill;text-shadow:0 4px 7px rgba(120,60,50,.35);line-height:1;letter-spacing:.02em}
+.logo small{display:block;font:600 10px 'DM Sans';letter-spacing:.3em;-webkit-text-stroke:0;color:#8a6a5e;text-shadow:none;margin-top:6px}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps span{font:600 12px 'DM Sans';padding:7px 13px;border-radius:99px;background:rgba(255,255,255,.6);color:#8a6a5e;transition:.4s}
+.steps .on{background:var(--rose);color:#fff;transform:translateY(-2px) scale(1.06);box-shadow:0 6px 12px rgba(200,87,125,.35)}.steps .done{background:#f7d7e1;color:var(--rose)}
+main{display:grid;grid-template-columns:400px 1fr;gap:10px;padding:0 24px;min-height:calc(100vh - 230px)}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:16px 10px;align-content:start;padding:8px;max-height:calc(100vh - 220px);overflow:auto}
+.hd{grid-column:1/-1;font:600 12px Fredoka;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.jar{border:0;background:none;display:flex;flex-direction:column;align-items:center;cursor:pointer;font:inherit;color:inherit;padding:0;transition:transform .3s cubic-bezier(.2,.9,.3,1.4);min-height:44px}
+.jar:hover{transform:translateY(-6px) rotate(var(--r,-1deg))}.jar:active{transform:scale(.93)}
+.lid{width:44px;height:12px;border-radius:5px 5px 2px 2px;background:linear-gradient(#ecdcae,#b99a55)}
+.gl{width:80px;height:72px;border-radius:12px 12px 18px 18px;position:relative;overflow:hidden;border:2px solid rgba(255,255,255,.85);background:linear-gradient(100deg,rgba(255,255,255,.75),rgba(255,255,255,.1) 30%,rgba(255,255,255,.45) 80%,rgba(255,255,255,.1));box-shadow:inset 0 0 12px #fff,0 9px 12px rgba(80,50,40,.22);display:grid;place-items:center}
+.gl b{position:absolute;left:3px;right:3px;bottom:3px;top:24%;border-radius:8px 8px 14px 14px;box-shadow:inset 0 6px 8px rgba(255,255,255,.35)}
+.gl svg{width:54px;height:54px;position:relative;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.bowl .lid{display:none}.bowl .gl{border-radius:50% 50% 50% 50%/20% 20% 80% 80%;height:60px;margin-top:12px}.bowl .gl b{border-radius:50%;top:8%}
+.tag{position:relative;margin-top:-20px;background:#fffaf0;padding:1px 9px 3px;font:700 17px/1.05 Caveat;transform:rotate(var(--r,-2deg));box-shadow:0 3px 5px rgba(80,50,40,.25);text-align:center;font-style:normal}
+.tag s{display:block;text-decoration:none;color:var(--rose)}
+.jar.on .gl{outline:3px solid var(--rose)}
+.stage{position:relative;display:grid;place-items:center;min-height:430px}
+.view{grid-area:1/1;transition:all .8s cubic-bezier(.2,.8,.2,1);transform-origin:50% 80%}
+.sv{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:430px;transform:scale(var(--k))}
+.sv.off{opacity:0;transform:perspective(900px) rotateX(70deg) scale(.7);pointer-events:none}
+.tv{opacity:0;transform:perspective(900px) rotateX(-70deg) scale(.7);pointer-events:none}.tv.on{opacity:1;transform:none;pointer-events:auto}
+.stack{position:relative;z-index:2;display:inline-flex;flex-direction:column-reverse;align-items:center;min-height:10px}
+.plate{position:relative;z-index:1;width:380px;height:90px;margin-top:-52px;display:grid;place-items:center}
+.plate:before{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,#fff 0 3px,#efe6da 3px 6px);box-shadow:0 14px 22px rgba(80,50,40,.25);-webkit-mask:radial-gradient(circle at 50% 50%,#000 60%,transparent 61%);}
+.plate:after{content:"";width:300px;height:46px;border-radius:50%;background:linear-gradient(#f1e2b8,#b9955a);box-shadow:0 5px 8px rgba(60,30,20,.35)}
+.ly{position:relative;border-radius:9px;box-shadow:0 3px 5px rgba(60,30,20,.3)}
+.ly:after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,rgba(0,0,0,.24),transparent 25%,rgba(255,255,255,.3) 45%,transparent 65%,rgba(0,0,0,.26))}
+.fall{animation:drop .7s cubic-bezier(.3,.7,.4,1);transform-origin:50% 100%}
+@keyframes drop{0%{transform:translateY(-320px) scale(1,1.1);opacity:0}15%{opacity:1}62%{transform:translateY(0) scale(1.07,.7)}80%{transform:scale(.98,1.09)}100%{transform:none}}
+.frost{position:absolute;inset:-5px -9px -4px;border-radius:16px 16px 10px 10px;box-shadow:0 5px 8px rgba(60,30,20,.3),inset 0 -8px 12px rgba(0,0,0,.12);z-index:5}
+.frost:before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.4),transparent 28%)}
+.pour{animation:pour 1s cubic-bezier(.3,.7,.3,1)}@keyframes pour{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+.tp{position:relative;width:min(var(--D,300px),86vw);aspect-ratio:1;border-radius:50%;overflow:hidden;touch-action:none;box-shadow:0 0 0 9px #fff8ee,0 0 0 11px #e4d6c3,0 24px 30px rgba(60,30,20,.35)}
+.tp canvas{position:absolute;inset:0;width:100%;height:100%}.dcs{position:absolute;inset:0;pointer-events:none}
+.dc{position:absolute;width:15%;pointer-events:auto;cursor:grab;transform:translate(-50%,-50%) rotate(var(--rot));filter:drop-shadow(0 3px 3px rgba(0,0,0,.4))}
+.dc svg{width:100%;display:block;animation:pop .4s cubic-bezier(.3,1.6,.5,1)}@keyframes pop{from{transform:scale(1.8);opacity:0}}
+.tp[data-tool=pipe] .dc{pointer-events:none}.tp[data-tool=erase]{cursor:cell}.tp[data-tool=pipe]{cursor:crosshair}
+.panel{grid-column:1/-1;background:rgba(255,255,255,.65);border-radius:16px;padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn,.panel button{font:600 13px 'DM Sans';border:0;border-radius:99px;padding:10px 16px;background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 3px 0 #dccdbd;transition:.15s;min-height:40px}
+.panel button:active{transform:translateY(3px);box-shadow:none}.panel button.on{background:var(--rose);color:#fff;box-shadow:0 3px 0 #9b3a5c}
+.dot{width:32px!important;height:32px;min-height:0!important;padding:0!important;border-radius:50%!important;border:3px solid #fff!important}.dot.on{outline:3px solid var(--rose)}
+.panel input[type=text]{flex:1;min-width:130px;border:2px solid #e8dccd;border-radius:99px;padding:9px 14px;font:inherit}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;padding:12px 16px calc(24px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(255,250,243,.9) 40%);transition:transform .5s;z-index:20}
+.bar.hide{transform:translateY(130%)}
+.pill{background:#fff;padding:10px 18px;border-radius:99px;box-shadow:0 4px 10px rgba(80,50,40,.15);font-weight:600}
+.next{font:600 17px Fredoka;border:0;border-radius:99px;padding:13px 30px;background:var(--rose);color:#fff;cursor:pointer;box-shadow:0 5px 0 #9b3a5c;transition:.15s}
+.next:active{transform:translateY(5px);box-shadow:none}.next:disabled{background:#cdbfb6;box-shadow:0 5px 0 #aa9c93;cursor:not-allowed}
+.lk{background:none;border:0;font:600 14px 'DM Sans';color:var(--ink);text-decoration:underline;cursor:pointer;padding:10px}.lk:disabled{opacity:.35}
+.foot{position:fixed;right:12px;bottom:4px;font-size:11px;opacity:.6;z-index:30}
+.rc{position:fixed;left:26px;top:80px;width:340px;max-height:calc(100vh - 100px);overflow:auto;z-index:40;background:#fffefa;font:13px 'Space Mono',monospace;padding:22px 22px 34px;transform:translateX(-130%) rotate(-5deg);transition:transform .8s cubic-bezier(.2,.9,.3,1.05);box-shadow:0 20px 40px rgba(60,30,20,.3);color:#222}
+.rc.open{transform:rotate(-2deg)}
+.rc:after{content:"";position:absolute;left:0;right:0;bottom:0;height:12px;background:linear-gradient(-45deg,transparent 7px,#e9e3d8 0),linear-gradient(45deg,transparent 7px,#e9e3d8 0);background-size:14px 14px}
+.rc h3{font:700 22px 'Space Mono';text-align:center;margin:0}.rc p{text-align:center;margin:4px 0 10px;font-size:11px}
+.ln{display:flex;justify-content:space-between;gap:8px;margin:5px 0}.ln.t{font-weight:700;font-size:16px}.rc hr{border:0;border-top:2px dashed #999;margin:10px 0}
+.rc label{display:block;margin:5px 0;cursor:pointer}.rc .go{width:100%;margin:12px 0 8px;font:700 17px 'Space Mono';background:#222;color:#fff;border:0;padding:14px;border-radius:6px;cursor:pointer;transition:.15s}.rc .go:active{transform:scale(.97)}
+.rc a{display:block;text-align:center;color:#222;cursor:pointer;text-decoration:underline}
+@media(max-width:760px){main{grid-template-columns:1fr;padding:0 10px}.stage{order:1;min-height:400px}.shelf{order:2;display:flex;overflow-x:auto;max-height:none;padding-bottom:150px}.shelf>.jar{flex:0 0 104px}.shelf>.hd{display:none}.panel{flex:0 0 300px}:root{--k:.74}.sv{height:400px}.logo{font-size:26px}
+.rc{left:0;right:0;top:auto;bottom:0;width:auto;max-height:80vh;transform:translateY(110%);border-radius:18px 18px 0 0}.rc.open{transform:none}}
+.tag{margin-top:-6px!important}header{border-bottom:2px solid rgba(201,154,124,.5)}.pill{border:1.5px solid #e3bfa8}
+.logo{color:#3b1f1a;-webkit-text-stroke:6px #fff3f6;text-shadow:0 4px 7px rgba(217,102,139,.4)}
+.tc .gl{width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#fde8ef);border:3px solid #fff;box-shadow:0 8px 14px rgba(160,70,100,.25),inset 0 0 0 2px #f2c3d1}
+.tc .gl b{inset:0;display:grid;place-items:center;box-shadow:none;border-radius:50%}.tc .gl svg{width:70px;height:70px}.tc .lid{display:none}.tc .tag{margin-top:8px!important}
+.lang{font:700 13px Cairo,'DM Sans';border:2px solid #c99a7c;background:#fff;color:var(--ink);border-radius:99px;padding:7px 14px;cursor:pointer;min-height:38px}.hl{display:flex;gap:10px;align-items:center}.ph{font:700 12px 'Space Mono';color:#9a6a58;direction:ltr}
+[dir=rtl] body,[dir=rtl] button,[dir=rtl] input{font-family:Cairo,sans-serif}
+[dir=rtl] .logo{font-family:'Aref Ruqaa',serif;font-size:42px;letter-spacing:0}[dir=rtl] .logo small{font-family:Cairo;letter-spacing:0;font-size:12px}
+[dir=rtl] .tag,[dir=rtl] .hd{font-family:'Aref Ruqaa',Cairo;letter-spacing:0}[dir=rtl] .tag{font-size:18px}
+[dir=rtl] .rc{font-family:Cairo,sans-serif;left:auto;right:26px;transform:translateX(130%) rotate(5deg)}[dir=rtl] .rc.open{transform:rotate(2deg)}[dir=rtl] .rc h3,[dir=rtl] .next,[dir=rtl] .rc .go{font-family:Cairo}[dir=rtl] .foot{right:auto;left:12px}
+@media(max-width:760px){header{padding:10px 14px;gap:8px}.hl{order:2;margin-inline-start:auto}.steps{order:3;flex-wrap:nowrap;overflow-x:auto;width:100%;padding-bottom:4px}.steps span{white-space:nowrap;flex:0 0 auto}
+.stage{min-height:360px}.sv{height:360px}:root{--k:.68}.shelf{padding-bottom:190px;scroll-snap-type:x proximity}.shelf>.jar{scroll-snap-align:start}.bar{gap:6px;padding:8px 10px calc(14px + env(safe-area-inset-bottom,0px))}
+.pill{order:-1;width:100%;text-align:center;font-size:13px;padding:8px 12px}.next{padding:11px 22px;font-size:15px}.panel input[type=text]{font-size:16px}.foot{display:none}[dir=rtl] .logo{font-size:34px}
+[dir=rtl] .rc{left:0;right:0;transform:translateY(110%)}[dir=rtl] .rc.open{transform:none}}
+.rm{margin:0 24px 6px;background:rgba(255,255,255,.65);border-radius:16px;padding:6px 14px}.rm summary{cursor:pointer;font:600 15px Fredoka,Cairo;padding:8px 0;color:var(--rose)}
+.rml{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 12px}.rmc{flex:0 0 170px;background:#fff;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:4px;text-align:center;box-shadow:0 5px 12px rgba(160,70,100,.15);transition:transform .25s}.rmc:hover{transform:translateY(-4px)}.rmc small{opacity:.7;font-size:12px;min-height:30px}.rmc span{font-weight:700;color:var(--rose)}.rmc button{border:0;border-radius:99px;background:var(--rose);color:#fff;padding:9px;font-weight:600;cursor:pointer;min-height:38px;font-family:inherit}.rmc button:active{transform:scale(.95)}
+.mini{display:flex;flex-direction:column-reverse;width:76px;margin:2px auto 6px;border-radius:7px;overflow:hidden;box-shadow:0 4px 6px rgba(60,30,20,.3)}#cartb{background:var(--rose);color:#fff;border-color:var(--rose)}
+.rc input:not([type=radio]),.rc textarea{width:100%;margin:4px 0;padding:8px;border:1.5px solid #bbb;border-radius:6px;font:inherit;background:#fff}.rc textarea{height:56px}.rc .er{color:#b00020;margin:4px 0}.rc .hd2{border-bottom:1px solid #ccc}.rc .hd2 a{display:inline;text-decoration:none;color:#b00020}
+.rc .wa{display:block;margin:8px 0;background:#25d366;color:#fff;text-decoration:none;text-align:center;padding:13px;border-radius:8px;font-weight:700}.rc .warn{background:#fff3cd;border:1.5px solid #e0a800;padding:10px;border-radius:6px;font-weight:700}
+@media(max-width:760px){.rm{margin:0 10px 6px}.rc input:not([type=radio]),.rc textarea{font-size:16px}}
+.rmc button.alt{background:#fff;color:var(--rose);border:1.5px solid var(--rose)}.rc .q button{width:30px;height:30px;border:1.5px solid #222;background:#fff;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit;color:#222}.panel label{display:flex;align-items:center;gap:6px}.panel input[type=range]{accent-color:var(--rose);min-width:120px;flex:1}
+.rc #ca{display:none}#mp{display:none;height:210px;border-radius:8px;margin:6px 0}.pin{width:22px;height:22px;background:var(--rose);border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 3px 6px rgba(0,0,0,.4)}.rc .loc{width:100%;margin:6px 0;padding:10px;border:1.5px solid #222;background:#fff;border-radius:6px;font:inherit;font-weight:700;cursor:pointer;color:#222}
+/* ===== ELEGANT IVORY & GOLD THEME ===== */
+:root{--ink:#3b2a20;--rose:#b98a4a;--fl:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 220'%3E%3Cdefs%3E%3Cpath id='l' d='M0 0q9-11 20 0q-9 11-20 0z'/%3E%3Cg id='f'%3E%3Ccircle r='3'/%3E%3Ccircle cx='7' r='4'/%3E%3Ccircle cx='-7' r='4'/%3E%3Ccircle cy='7' r='4'/%3E%3Ccircle cy='-7' r='4'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23c8ad84' stroke-width='1.2'%3E%3Cpath d='M6 6C14 70 44 128 108 166S186 206 214 212'/%3E%3Cuse href='%23l' transform='translate(10 56) rotate(60)'/%3E%3Cuse href='%23l' transform='translate(26 98) rotate(-20)'/%3E%3Cuse href='%23l' transform='translate(56 132) rotate(50)'/%3E%3Cuse href='%23l' transform='translate(92 156) rotate(-10)'/%3E%3Cuse href='%23l' transform='translate(132 178) rotate(40)'/%3E%3Cuse href='%23l' transform='translate(172 198) rotate(-5)'/%3E%3Cuse href='%23f' transform='translate(30 74)'/%3E%3Cuse href='%23f' transform='translate(118 150) scale(.8)'/%3E%3C/g%3E%3C/svg%3E")}
+body{color:#3b2a20;font-family:Jost,'DM Sans',sans-serif;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .5 0 0 0 0 .35 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),radial-gradient(ellipse at 50% 0,#fffdf8,#fbf4ea 55%,#f3e6d0)}
+body:before,body:after,html:before,html:after{content:"";position:fixed;width:min(250px,34vw);aspect-ratio:1;background:var(--fl) no-repeat center/contain;opacity:.6;pointer-events:none;z-index:-1}
+body:before{top:0;left:0}body:after{top:0;right:0;transform:scaleX(-1)}html:before{bottom:0;left:0;transform:scaleY(-1)}html:after{bottom:0;right:0;transform:scale(-1,-1)}
+header{position:relative;flex-direction:column;justify-content:center;align-items:center;gap:6px;padding:22px 26px 10px;border:0}
+.logo{font:700 36px 'Cormorant Garamond',serif;letter-spacing:.16em;text-transform:uppercase;color:#4a2f22;-webkit-text-stroke:0;text-shadow:none;text-align:center}
+.logo small{font:500 11px Jost;letter-spacing:.34em;color:#8a6a4a;margin-top:8px}.logo:after{content:"";display:block;width:180px;height:1px;margin:10px auto 0;background:linear-gradient(90deg,transparent,#b98a4a,transparent)}
+.hl{position:absolute;top:16px;inset-inline-end:22px}.lang{border-color:#b98a4a;font-family:Jost;color:#3b2a20}
+.steps{justify-content:center;gap:2px}.steps span{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;color:#9a8266;font:500 12px Jost;letter-spacing:.16em;text-transform:uppercase;padding:8px 12px;box-shadow:none;transform:none}
+.steps .on{background:none;color:#3b2a20;border-bottom-color:#b98a4a;box-shadow:none;transform:none}.steps .done{background:none;color:#b98a4a}
+main{max-width:1280px;margin:0 auto;gap:18px;padding:0 28px 20px}
+.shelf,.stage{background:rgba(255,253,248,.88);border:1px solid #e0cfb2;border-radius:12px;box-shadow:0 8px 24px rgba(120,90,50,.1)}
+.shelf{padding:16px;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px}.stage{background:radial-gradient(ellipse at 50% 30%,#fffdf8,#f7ecda)}
+.ttl{grid-column:1/-1;text-align:center;font:600 17px 'Cormorant Garamond',serif;letter-spacing:.14em;text-transform:uppercase;color:#4a2f22;padding-bottom:8px;border-bottom:1px solid #e3d3b8}
+.hd{font:500 12px Jost;color:#8a6a4a;letter-spacing:.14em}
+.jar{background:#fffdf8;border:1px solid #e3d3b8;border-radius:10px;padding:10px 6px 8px;box-shadow:0 2px 6px rgba(120,90,50,.08);position:relative;transition:transform .25s,box-shadow .25s,border-color .25s}
+.jar:hover{transform:translateY(-3px);box-shadow:0 8px 16px rgba(120,90,50,.18);border-color:#c9a35a}.jar .lid{display:none}
+.jar .gl{width:64px;height:48px;border-radius:8px;border:1px solid #e3d3b8;background:#fff;box-shadow:none}.jar .gl b{inset:0;border-radius:7px;box-shadow:inset 0 3px 5px rgba(255,255,255,.4),inset 0 -3px 5px rgba(0,0,0,.12)}
+.jar.tc .gl{width:72px;height:72px;border-radius:50%;background:#fff}.jar.tc .gl b{box-shadow:none;border-radius:50%}.jar.bowl .gl{width:60px;height:60px;border-radius:50%;margin-top:0}.jar.bowl .gl b{border-radius:50%}
+.jar .tag{background:none;box-shadow:none;transform:none;margin-top:8px!important;padding:0;font:600 16px/1.15 'Cormorant Garamond',serif;color:#3b2a20}.jar .tag s{color:#a47a3a;font:500 12px Jost;margin-top:2px}
+.jar.on{border:2px solid #b98a4a;background:#fff8ea}.jar.on .gl{outline:none}.jar.on:after{content:"\2713";position:absolute;top:6px;inset-inline-end:6px;width:18px;height:18px;border-radius:50%;background:#b98a4a;color:#fff;font:700 11px/18px sans-serif;text-align:center}
+.plate{display:block;width:340px;height:132px;margin-top:-24px;background:radial-gradient(ellipse 100px 16px at 50% 114px,#d7b066 0,#a87a35 70%,transparent 72%)}
+.plate:before{inset:auto;left:0;right:0;top:0;height:46px;border-radius:50%;background:linear-gradient(#f6e6b8,#c99a4a 60%,#9c7330);-webkit-mask:none;mask:none;box-shadow:inset 0 3px 3px rgba(255,255,255,.6),0 8px 10px rgba(80,50,20,.3)}
+.plate:after{position:absolute;left:50%;top:38px;width:26px;height:78px;margin-left:-13px;border-radius:6px;background:linear-gradient(90deg,#8d6a2b,#f1d994,#8d6a2b);box-shadow:none}
+.frost:after{content:"";position:absolute;left:-2px;right:-2px;top:-7px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.6) 0 3px,transparent 4px) 0 0/12px 14px}
+.tp{box-shadow:0 0 0 8px #fbf3e4,0 0 0 10px #c9a35a,0 0 0 18px #f3e4c4,0 26px 30px rgba(80,55,20,.3)}.tp:after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;border:7px dotted rgba(255,255,255,.65)}
+.panel,.rm{background:#fffdf8;border:1px solid #e3d3b8;border-radius:10px}.rm summary{font:600 17px 'Cormorant Garamond',serif;letter-spacing:.1em;text-transform:uppercase;color:#4a2f22}
+.rmc{border:1px solid #e3d3b8;box-shadow:none;border-radius:10px}.rmc b{font:600 16px 'Cormorant Garamond',serif}.rmc span{color:#a47a3a}
+.panel button{border:1px solid #d9c4a0;border-radius:6px;background:#fffdf8;box-shadow:none;font-family:Jost}.panel button.on{background:#b98a4a;color:#fff;border-color:#b98a4a;box-shadow:none}.dot{border:3px solid #fff!important;box-shadow:0 0 0 1px #d9c4a0}.dot.on{outline-color:#b98a4a}
+.pill{background:#fffdf8;border:1px solid #d9c4a0;color:#5a4030;font:italic 600 17px 'Cormorant Garamond',serif;box-shadow:none;border-radius:8px}
+.bar{background:linear-gradient(transparent,rgba(251,244,234,.96) 35%)}
+.next{font:600 14px Jost;letter-spacing:.14em;text-transform:uppercase;background:linear-gradient(#c79a58,#a87a3a);border-radius:6px;box-shadow:0 3px 0 #86602a;padding:13px 30px}.next:disabled{background:#e2d6c2;box-shadow:0 3px 0 #cbbca2}
+.next:active{transform:translateY(3px);box-shadow:none}.lk{color:#7a5a3a;font-family:Jost}
+.rc{font:15px 'Cormorant Garamond',serif;background:#fffdf8;border:1px solid #d9c4a0;color:#3b2a20}.rc h3{font:700 26px 'Cormorant Garamond',serif;letter-spacing:.1em}.rc p{font-size:13px}
+.rc:after{background:linear-gradient(-45deg,transparent 7px,#f6ecdc 0),linear-gradient(45deg,transparent 7px,#f6ecdc 0);background-size:14px 14px}
+.rc .go{background:#a87a3a;border-radius:6px;font:600 14px Jost;letter-spacing:.1em;text-transform:uppercase}.rc .q button{border-color:#b98a4a;color:#3b2a20}
+[dir=rtl] .logo{font-family:'Aref Ruqaa',serif;text-transform:none;letter-spacing:0;font-size:44px}[dir=rtl] .logo small,[dir=rtl] .steps span,[dir=rtl] .next,[dir=rtl] .rc .go{font-family:Cairo;letter-spacing:0;text-transform:none}
+[dir=rtl] .ttl,[dir=rtl] .jar .tag,[dir=rtl] .rmc b,[dir=rtl] .rm summary,[dir=rtl] .rc h3{font-family:Amiri,serif;letter-spacing:0;text-transform:none}[dir=rtl] .ttl{font-size:21px}[dir=rtl] .pill{font-family:Amiri,serif;font-style:normal}[dir=rtl] .rc{font-family:Cairo,sans-serif}
+@media(max-width:760px){.hl{position:static}header{padding:14px 12px 6px}.logo{font-size:26px}[dir=rtl] .logo{font-size:34px}main{padding:0 10px 20px}.shelf{padding:10px 10px 190px;gap:10px}.shelf>.ttl{display:none}.shelf>.jar{flex:0 0 112px}.plate{width:280px}.steps span{padding:8px 8px;font-size:11px;letter-spacing:.08em}}
+.jar .gl svg{width:100%;height:100%;filter:drop-shadow(0 3px 3px rgba(80,50,20,.3))}.jar.tc .gl svg{width:64px;height:64px}
+.jar.szc .gl{width:100%;height:98px;border:0;background:none;overflow:visible}.jar.szc .gl b{inset:0;display:grid;place-items:center;background:none!important;box-shadow:none}
+.jar.rw{flex-direction:row;align-items:center;gap:8px;padding:8px 10px}.jar.rw .gl{width:64px;height:52px;flex:none;border:0;background:none;overflow:visible}.jar.rw .gl b{inset:0;display:grid;place-items:center;background:none!important;box-shadow:none}.jar.rw .tag{margin:0!important;text-align:start;font-size:15px}
+.shelf.rows{grid-template-columns:repeat(2,1fr)}.dc{filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+@media(max-width:760px){.shelf.rows>.jar{flex:0 0 200px}.jar.szc .gl{height:90px}}
+.ly.s{border-radius:12px}.ly.s:before{content:"";position:absolute;left:0;right:0;top:0;height:35%;border-radius:12px 12px 0 0;background:linear-gradient(rgba(255,236,196,.65),transparent);z-index:1}
+.ly.f{border-radius:8px/45%;margin:-2px 0;z-index:1;box-shadow:0 3px 4px rgba(0,0,0,.35),inset 0 3px 4px rgba(255,255,255,.35),inset 0 -4px 5px rgba(0,0,0,.28)}
+.ly.f:before{content:"";position:absolute;left:8%;right:8%;top:12%;height:22%;border-radius:50%;background:rgba(255,255,255,.4);filter:blur(1px);z-index:1}
+.ly.nut{background:radial-gradient(ellipse at 30% 25%,rgba(255,255,255,.3),transparent 40%),linear-gradient(#6b3a20,#3a1a0b 70%,#4a2412)!important}
+.ly.car{background:linear-gradient(#f4b95d,#c9741c 60%,#a85a12)!important}
+.ly.pis{background:radial-gradient(circle at 20% 30%,#e6f1be 0 5px,transparent 6px) 0 0/22px 14px,radial-gradient(circle at 70% 65%,#7fa347 0 3px,transparent 4px) 0 0/16px 11px,linear-gradient(#bddc84,#8fb357)!important}
+.ly.kun{background:repeating-linear-gradient(104deg,#f3b64e 0 2px,#c4791f 2px 4px,#f9d58c 4px 5px,#d98e2d 5px 7px)!important}
+.ly.hz{background:radial-gradient(ellipse at 20% 40%,#8a5a2c 0 3px,transparent 4px) 0 0/13px 9px,radial-gradient(ellipse at 70% 60%,#e0b070 0 3px,transparent 4px) 0 0/15px 10px,radial-gradient(circle at 45% 20%,#5a3516 0 2px,transparent 3px) 0 0/11px 8px,#c8955a!important}
+.ly.jam{background:radial-gradient(circle at 25% 40%,#ff8a95 0 2px,transparent 3px) 0 0/14px 10px,radial-gradient(circle at 65% 60%,#6e0f25 0 2px,transparent 3px) 0 0/18px 9px,linear-gradient(#e0384f,#8f1a33)!important}
+.ly.crm{background:radial-gradient(circle at 15% 50%,#fff 0 7px,transparent 8px) 0 0/18px 12px,radial-gradient(circle at 60% 40%,#fff 0 8px,transparent 9px) 0 0/22px 14px,linear-gradient(#f8f1e2,#e3d8c0)!important}
+.cur{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #e3d3b8;border-radius:10px;background:#fffdf8;flex-wrap:wrap}.cur b{font:600 15px 'Cormorant Garamond',serif;color:#4a2f22}.cur .cl{display:flex;gap:2px;flex:1;overflow-x:auto;min-height:34px}.cur .cl svg{width:38px;height:34px;flex:none}.cur button{border:0;background:none;cursor:pointer;color:#8a4a3a;width:34px;height:34px;padding:0}.cur button svg{width:22px;height:22px}
+@media(max-width:760px){.shelf>.cur{flex:0 0 270px}}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<radialGradient id="gS" cx=".35" cy=".3"><stop offset="0" stop-color="#ff6670"/><stop offset=".6" stop-color="#d11f35"/><stop offset="1" stop-color="#8e0f22"/></radialGradient>
+<linearGradient id="gC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7a4a2e"/><stop offset="1" stop-color="#2c140a"/></linearGradient>
+<radialGradient id="gH" cx=".35" cy=".3"><stop offset="0" stop-color="#d9a05c"/><stop offset=".6" stop-color="#8a5226"/><stop offset="1" stop-color="#4b2a10"/></radialGradient>
+<linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0a0"/><stop offset=".4" stop-color="#e0b030"/><stop offset=".7" stop-color="#b8860b"/><stop offset="1" stop-color="#ffe680"/></linearGradient>
+<radialGradient id="gM" cx=".4" cy=".35"><stop offset="0" stop-color="#ffe3ea"/><stop offset="1" stop-color="#ee98b3"/></radialGradient><radialGradient id="gR" cx=".4" cy=".35"><stop offset="0" stop-color="#fffdf7"/><stop offset=".7" stop-color="#f6ead3"/><stop offset="1" stop-color="#dcc8a2"/></radialGradient>
+<radialGradient id="gL" cx=".4" cy=".3"><stop offset="0" stop-color="#7bbf5a"/><stop offset="1" stop-color="#2f6b2a"/></radialGradient>
+<radialGradient id="gSl" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#fff6f2"/><stop offset=".6" stop-color="#ffb3bb"/><stop offset="1" stop-color="#e8404f"/></radialGradient>
+<radialGradient id="gCh" cx=".35" cy=".3"><stop offset="0" stop-color="#ff5565"/><stop offset=".55" stop-color="#b3122b"/><stop offset="1" stop-color="#4a0510"/></radialGradient>
+<radialGradient id="gF" cx=".5" cy=".85" r=".9"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#f2a9bf"/></radialGradient>
+<linearGradient id="gSt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e6b8"/><stop offset=".5" stop-color="#c99a4a"/><stop offset="1" stop-color="#8c6428"/></linearGradient>
+<linearGradient id="gStem" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d6a2b"/><stop offset=".5" stop-color="#f1d994"/><stop offset="1" stop-color="#8d6a2b"/></linearGradient>
+<linearGradient id="gCk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#dcc79f"/><stop offset=".4" stop-color="#fff8ea"/><stop offset=".75" stop-color="#f0e0c0"/><stop offset="1" stop-color="#d4bc8e"/></linearGradient>
+<radialGradient id="gCkT" cx=".4" cy=".4"><stop offset="0" stop-color="#fffdf7"/><stop offset="1" stop-color="#efe0c2"/></radialGradient></defs></svg>
+<header><div class="logo"><span id="brand"></span><small id="tag"></small></div><div class="hl"><button class="lang" id="cartb" style="display:none"></button><button class="lang" id="lang">عربي</button></div><div class="steps" id="steps"></div></header>
+<details class="rm" id="rm"><summary id="rms"></summary><div class="rml" id="rml"></div></details>
+<main><div class="shelf" id="shelf"></div>
+<div class="stage"><div class="view sv" id="sv"><div class="stack" id="stack"></div><div class="plate"></div></div>
+<div class="view tv" id="tv"><div class="tp" id="tp" data-tool="pipe"><canvas id="cv" width="640" height="640"></canvas><div class="dcs" id="dcs"></div></div></div></div></main>
+<div class="bar" id="bar"><button class="lk" id="back">Back</button><span class="pill" id="hint"></span><button class="lk" id="undo">Undo</button><button class="next" id="next">Next ↗</button></div>
+<div class="rc" id="rc"></div><div class="foot">A demo cake builder. No real cakes were harmed.</div>
+<script>
+/* ===== EDITABLE CONSTANTS ===== */
+const BRAND="LUNCH CAKE", TAGLINE="CAKES. LAYERED BY YOU.", CUR="$", DELIVERY=4;
+const SIZES=[{id:'s',name:'Small 6"',w:190,d:250,price:28},{id:'m',name:'Medium 8"',w:240,d:300,price:38},{id:'l',name:'Large 10"',w:290,d:350,price:50}];
+const TYPES=[{id:'v',name:'Vanilla sponge',price:0,c:'#f3d9a0',lt:'#fbe9c0',dk:'#d9b46a'},{id:'c',name:'Chocolate sponge',price:2,c:'#6b3b22',lt:'#8a5535',dk:'#43220f'},
+{id:'r',name:'Red velvet',price:3,c:'#b3262f',lt:'#d3474f',dk:'#7d1219'},{id:'z',name:'Lemon sponge',price:3,c:'#f6e27a',lt:'#fff0a8',dk:'#d9bf45'}];
+const FILLS=[ // h = layer height in px
+{id:'nut',name:'Nutella',price:3.5,h:16,css:'radial-gradient(ellipse at 30% 25%,rgba(255,255,255,.35),transparent 40%),linear-gradient(#6a3a22,#34170a)'},
+{id:'hz',name:'Crushed hazelnut',price:3,h:18,css:'radial-gradient(circle at 20% 40%,#b07a43 0 3px,transparent 4px) 0 0/14px 10px,radial-gradient(circle at 70% 60%,#7a4a22 0 3px,transparent 4px) 0 0/17px 12px,#d9a566'},
+{id:'car',name:'Caramel',price:2,h:15,css:'linear-gradient(rgba(255,255,255,.45),transparent 35%),linear-gradient(#eaa84c,#b8691c)'},
+{id:'pis',name:'Pistachio cream',price:4.5,h:18,css:'repeating-linear-gradient(90deg,rgba(255,255,255,.22) 0 3px,rgba(0,0,0,.1) 3px 6px),linear-gradient(#b7d68a,#86ad5a)'},
+{id:'kun',name:'Kunafa',price:4,h:20,css:'repeating-linear-gradient(100deg,#f0b65a 0 2px,#c98428 2px 4px,#f7cf86 4px 5px),#d9962f'},
+{id:'jam',name:'Strawberry jam',price:2.5,h:14,css:'radial-gradient(circle at 25% 40%,#ff8a95 0 3px,transparent 4px) 0 0/16px 12px,radial-gradient(circle at 65% 60%,#8e1530 0 3px,transparent 4px) 0 0/20px 10px,linear-gradient(#d52a49,#8f1a33)'},
+{id:'crm',name:'Cream filling',price:2.5,h:16,css:'radial-gradient(ellipse at 30% 30%,#fff,transparent 55%),linear-gradient(#fffaf0,#efe3cc)'},
+{id:'sp',name:'Extra sponge',price:3,h:34,css:null}];
+const FROSTS=[{name:'Cream white',c:'#fbf1de',l:'#fffaf0',d:'#e5d3b5'},{name:'Pink',c:'#f4b6c8',l:'#ffd9e4',d:'#d98aa5'},{name:'Chocolate',c:'#6a3f2a',l:'#8a5a40',d:'#40220f'},
+{name:'Pistachio',c:'#a8c982',l:'#cfe5ae',d:'#7c9d57'},{name:'Caramel',c:'#d89a52',l:'#f0c283',d:'#a86e2c'},{name:'Lavender',c:'#c3b0e0',l:'#e2d6f5',d:'#9a85c4'}];
+const TOPS=[ // svg = top-down art (viewBox 60)
+{id:'st',name:'Strawberry',price:1.5,svg:'<path d="M30 54C14 44 8 28 14 20c5-6 12-3 16-1 4-2 11-5 16 1 6 8 0 24-16 34z" fill="url(#gS)"/><g fill="#ffe9a8"><ellipse cx="22" cy="27" rx="1.2" ry="2"/><ellipse cx="32" cy="32" rx="1.2" ry="2"/><ellipse cx="40" cy="26" rx="1.2" ry="2"/><ellipse cx="27" cy="40" rx="1.2" ry="2"/><ellipse cx="36" cy="42" rx="1.2" ry="2"/></g><path d="M30 19l-9-8 7 2 2-6 2 6 7-2z" fill="#3f8a3a"/><path d="M19 24c2-5 6-6 9-5" stroke="#fff" stroke-opacity=".5" stroke-width="2.5" fill="none" stroke-linecap="round"/>'},
+{id:'ch',name:'Choc shavings',price:1.5,svg:'<g fill="url(#gC)"><path d="M8 40q10-14 22-6 6 4 0 7-10-6-22 4z"/><path d="M28 24q10-12 22-4 5 4-1 6-9-5-21 2z"/><path d="M20 52q12-8 28-2 2 4-3 5-12-4-25 1z"/></g>'},
+{id:'sp',name:'Sprinkles',price:1,svg:'<g stroke-width="3.4" stroke-linecap="round"><path d="M10 14l6 3" stroke="#f45b8a"/><path d="M30 8l-2 7" stroke="#ffd54a"/><path d="M46 16l-6 4" stroke="#4fb3e8"/><path d="M14 34l7-1" stroke="#7bd36b"/><path d="M36 30l5 5" stroke="#f45b8a"/><path d="M50 40l-7 2" stroke="#ffd54a"/><path d="M20 50l4-5" stroke="#4fb3e8"/><path d="M40 52l6-3" stroke="#7bd36b"/><path d="M26 24l3 6" stroke="#fff"/></g>'},
+{id:'pi',name:'Crushed pistachio',price:1.5,svg:'<g><ellipse cx="14" cy="20" rx="6" ry="4" fill="#8cb35a"/><ellipse cx="30" cy="14" rx="5" ry="3" fill="#a9cf72"/><ellipse cx="44" cy="24" rx="6" ry="4" fill="#6f9a3e"/><ellipse cx="22" cy="36" rx="6" ry="4" fill="#a9cf72"/><ellipse cx="40" cy="42" rx="5" ry="3.5" fill="#8cb35a"/><ellipse cx="28" cy="50" rx="4" ry="3" fill="#6f9a3e"/><ellipse cx="13" cy="19" rx="3" ry="1.3" fill="#fff" opacity=".4"/></g>'},
+{id:'hz',name:'Hazelnut',price:1,svg:'<circle cx="30" cy="32" r="17" fill="url(#gH)"/><path d="M20 22q10-8 20 0" stroke="#3a1f0a" stroke-width="2" fill="none"/><ellipse cx="24" cy="25" rx="5" ry="3" fill="#fff" opacity=".35"/>'},
+{id:'go',name:'Gold leaf',price:2,svg:'<path d="M6 30L20 10l14 6 18-4-6 20 8 14-22-4-14 8z" fill="url(#gG)"/><path d="M14 28l12-8M30 40l12 3" stroke="#fff" stroke-opacity=".6" stroke-width="1.5"/>'},
+{id:'mc',name:'Macaron',price:2.5,svg:'<circle cx="30" cy="30" r="22" fill="#f5c0d0"/><circle cx="30" cy="30" r="22" fill="none" stroke="#e58aa8" stroke-width="2" stroke-dasharray="2 2"/><circle cx="30" cy="30" r="18" fill="url(#gM)"/><ellipse cx="23" cy="22" rx="8" ry="4" fill="#fff" opacity=".5"/>'},
+{id:'fl',name:'Edible flower',price:2,svg:'<g transform="translate(30 30)" fill="#fff6f8" stroke="#f0b6c8" stroke-width="1"><ellipse cy="-12" rx="6" ry="13"/><ellipse cy="-12" rx="6" ry="13" transform="rotate(60)"/><ellipse cy="-12" rx="6" ry="13" transform="rotate(120)"/><ellipse cy="-12" rx="6" ry="13" transform="rotate(180)"/><ellipse cy="-12" rx="6" ry="13" transform="rotate(240)"/><ellipse cy="-12" rx="6" ry="13" transform="rotate(300)"/><circle r="6" fill="#ffcf3a" stroke="#d9a21a"/></g>'},
+{id:'cs',name:'Cream swirl',price:1,svg:'<circle cx="30" cy="30" r="23" fill="url(#gR)"/><circle cx="30" cy="30" r="23" fill="none" stroke="#e8d6b4" stroke-width="3" stroke-dasharray="3 2.2"/><path d="M30 30m-4 0a4 4 0 1 1 8 0a8 8 0 1 1-16 0a12 12 0 1 1 24 0a16 16 0 1 1-32 0" fill="none" stroke="#d9c39a" stroke-width="1.6" stroke-linecap="round"/><path d="M19 22a14 14 0 0 1 12-8" stroke="#fff" stroke-opacity=".85" stroke-width="1.6" fill="none" stroke-linecap="round"/>'},
+{id:'cd',name:'Cream dots',price:1,svg:'<g fill="url(#gR)" stroke="#e1cfa8" stroke-width=".8"><circle cx="16" cy="18" r="7"/><circle cx="38" cy="14" r="6"/><circle cx="46" cy="34" r="7"/><circle cx="24" cy="42" r="7"/><circle cx="32" cy="28" r="5"/></g><g fill="#fff" opacity=".8"><circle cx="14" cy="15" r="2"/><circle cx="36" cy="12" r="1.7"/><circle cx="44" cy="31" r="2"/><circle cx="22" cy="39" r="2"/></g>'},
+{id:'dr',name:'Choc drizzle',price:1.5,svg:'<path d="M5 40C13 16 23 54 31 30S46 18 55 26" fill="none" stroke="#2c140a" stroke-width="6" stroke-linecap="round"/><path d="M5 40C13 16 23 54 31 30S46 18 55 26" fill="none" stroke="#9a6a48" stroke-width="1.8" stroke-opacity=".7" stroke-linecap="round" transform="translate(-1 -1.5)"/>'}];
+const PIPE=['#fffaf0','#f7a8c0','#6b3b22','#9cc16a','#e8a24a','#b9a3e0','#e63a4f','#ffd54a'];
+const HINTS=["Start by choosing your cake size.","Pick a sponge flavour.","Stack fillings and layers. Add as many as you like.","Choose your buttercream colour.","Decorate! Place toppings, pipe cream, add a message."];
+const STEPS=["Size","Cake","Layers","Frosting","Decorate"];
+/* ===== ARABIC / i18n (edit the Arabic text here) ===== */
+const BRAND_AR="لانش كيك",TAGLINE_AR="كيك بطبقاتك أنت";let LANG='en';
+const AR={'Small 6"':'صغير ٦ إنش','Medium 8"':'وسط ٨ إنش','Large 10"':'كبير ١٠ إنش','Vanilla sponge':'إسفنج فانيلا','Chocolate sponge':'إسفنج شوكولاتة','Red velvet':'ريد فلفت','Lemon sponge':'إسفنج ليمون',
+'Nutella':'نوتيلا','Crushed hazelnut':'بندق مطحون','Caramel':'كراميل','Pistachio cream':'كريمة فستق','Kunafa':'كنافة','Strawberry jam':'مربى فراولة','Extra sponge':'طبقة كيك إضافية',
+'Cream white':'أبيض كريمي','Pink':'وردي','Chocolate':'شوكولاتة','Pistachio':'فستقي','Lavender':'لافندر','Strawberry':'فراولة','Choc shavings':'رقائق شوكولاتة','Sprinkles':'سبرنكلز','Crushed pistachio':'فستق مطحون','Hazelnut':'بندق','Gold leaf':'ورق ذهب','Macaron':'ماكارون','Edible flower':'زهرة صالحة للأكل','Choc drizzle':'صوص شوكولاتة',
+'Size':'الحجم','Cake':'الكيك','Layers':'الطبقات','Frosting':'الكريمة','Decorate':'التزيين',
+'Start by choosing your cake size.':'ابدأ باختيار حجم الكيكة.','Pick a sponge flavour.':'اختر نكهة الكيك.','Stack fillings and layers. Add as many as you like.':'رتّب الحشوات والطبقات، وأضف ما شئت منها.','Choose your buttercream colour.':'اختر لون الكريمة الخارجية.','Decorate! Place toppings, pipe cream, add a message.':'زيّن كيكتك! ضع الإضافات وارسم بالكريمة واكتب رسالة.',
+'Back':'رجوع','Undo':'تراجع','Next ↗':'التالي ↖','Review order ↗':'مراجعة الطلب ↖','Tap to drop a layer':'اضغط لإضافة طبقة','Toppings: pick, then tap the cake':'الإضافات: اختر ثم اضغط على الكيكة','Pipe':'رسم بالكريمة','Eraser':'ممحاة','Clear drawing':'مسح الرسم','Text on cake, e.g. Happy Birthday':'اكتب على الكيكة، مثل: عيد ميلاد سعيد','included':'مشمول','ON US':'علينا',
+' cake':' · كيك',' layer':' (طبقة)',' frosting':' · كريمة','Piped drawing':'رسم بالكريمة','Lettering':'كتابة','ONE VERY LAYERED ORDER':'طلب بطبقات كثيرة جدًا','TOTAL':'المجموع','Pick up':'استلام من المحل','Delivery':'توصيل','Checkout ↗':'إتمام الطلب ↖','← Back to decorating':'→ العودة للتزيين',
+'Order placed!':'تم تسجيل الطلب!','Thank you. This is a demo, no payment taken.':'شكرًا لك. هذه نسخة تجريبية ولا يوجد دفع فعلي.','ORDER':'رقم الطلب','Build another cake':'صمّم كيكة أخرى','A demo cake builder. No real cakes were harmed.':'نسخة تجريبية لمصمم الكيك. لم تتأذَّ أي كيكة حقيقية.'};
+const tr=s=>LANG=='ar'&&AR[s]||s,brand=()=>LANG=='ar'?BRAND_AR:BRAND,FF=()=>/[\u0600-\u06FF]/.test(S.text)?'"'+fnt().a+'",Cairo':'"'+fnt().l+'"';
+function applyLang(){const a=LANG=='ar';document.documentElement.lang=LANG;document.documentElement.dir=a?'rtl':'ltr';$('#brand').textContent=brand();$('#tag').textContent=a?TAGLINE_AR:TAGLINE;document.title=brand();
+ $('#lang').textContent=a?'English':'عربي';$('#back').textContent=tr('Back');$('#undo').textContent=tr('Undo');$('.foot').textContent=tr('A demo cake builder. No real cakes were harmed.');
+ try{sessionStorage.lang=LANG}catch(e){}document.fonts&&document.fonts.load('600 40px "Aref Ruqaa"').then(redraw);presets();cartUI();shelf();ui();if($('#rc').classList.contains('open')&&$('#co'))receipt()}
+/* ===== STATE ===== */
+const $=q=>document.querySelector(q),fmt=n=>CUR+n.toFixed(2),hap=()=>navigator.vibrate&&navigator.vibrate(8);
+const S={fs:100,font:0,preset:null,cart:[],dl:0,cu:{n:'',p:'',a:''},stamps:[],step:0,size:null,type:null,layers:[],frost:null,decos:[],strokes:[],text:'',tool:'pipe',top:null,color:PIPE[0],ps:14,hist:[],fa:false};
+const spCss=t=>`radial-gradient(circle,${t.dk} 0 1px,transparent 1.6px) 0 0/7px 6px,radial-gradient(circle,${t.lt} 0 1px,transparent 1.6px) 3px 2px/9px 7px,linear-gradient(${t.lt},${t.c} 40%,${t.dk})`;
+const curType=()=>S.type||TYPES[0], fillCss=f=>f.css||spCss(curType());
+const frostSide=f=>`linear-gradient(90deg,${f.d},${f.c} 22%,${f.l} 45%,${f.c} 70%,${f.d})`;
+const sv=s=>`<svg viewBox="0 0 60 60">${s}</svg>`;
+/* ===== UI HELPERS ===== */
+$('#brand').textContent=BRAND;$('#tag').textContent=TAGLINE;document.title=BRAND;
+const jar=(o)=>`<button class="jar ${o.cls||''}" data-t="${o.t||''}" data-i="${o.i}" style="--r:${o.i%2?2:-2}deg"><i class="lid"></i><span class="gl"><b style="background:${o.css||'none'}">${o.html||''}</b></span><em class="tag">${tr(o.name)}<s>${tr(o.price)}</s></em></button>`;
+function shelf(){const h=$('#shelf');let x='';
+ if(S.step==0)x=SIZES.map((s,i)=>jar({i,name:s.name,price:fmt(s.price),html:cakeSvg(i),cls:'szc'+(S.size==s?' on':'')})).join('');
+ if(S.step==1)x=TYPES.map((t,i)=>jar({i,name:t.name,price:t.price?'+'+fmt(t.price):'included',html:sliceSvg([[t.c,8,'sp'],[i==1?'#3a1c0d':'#fffaf0',3],[t.c,8,'sp'],[i==1?'#3a1c0d':'#fffaf0',3],[t.c,8,'sp']],t.lt),cls:'rw'+(S.type==t?' on':'')})).join('');
+ if(S.step==2)x='<div class="hd">'+tr('Tap to drop a layer')+'</div>'+FILLS.map((f,i)=>jar({i,name:f.name,price:'+'+fmt(f.price),html:fillIcon(f),cls:'rw'})).join('')+'<div class="cur" id="cur"></div>';
+ if(S.step==3)x=FROSTS.map((f,i)=>jar({i,cls:'bowl'+(S.frost==f?' on':''),name:f.name,price:'ON US',css:`radial-gradient(circle at 38% 30%,${f.l},${f.c} 55%,${f.d})`})).join('');
+ if(S.step==4)x='<div class="hd">'+tr('Toppings: pick, then tap the cake')+'</div>'+TOPS.map((t,i)=>jar({i,t:t.id,name:t.name,price:fmt(t.price),html:sv(t.svg),cls:'tc'+(S.top==t.id&&S.tool=='place'?' on':'')})).join('')+
+ `<div class="panel"><button data-t="pipe" class="on">${tr('Pipe')}</button><button data-t="erase">${tr('Eraser')}</button><button id="clr">${tr('Clear drawing')}</button>${PIPE.map(c=>`<button class="dot${c==S.color?' on':''}" data-c="${c}" style="background:${c}"></button>`).join('')}
+ <label style="font-size:12px">${tr('Nozzle size')} <input type="range" id="ps" min="6" max="30" value="${S.ps}"></label><input type="text" dir="auto" id="tx" maxlength="18" placeholder="${tr('Text on cake, e.g. Happy Birthday')}" value="${esc(S.text)}"></div><div class="panel"><b class="hd" style="width:100%">${tr('Text style')}</b>${FONTS.map((f,i)=>`<button data-f="${i}" class="${S.font==i?'on':''}" style="font-family:'${f.l}',Cairo;font-size:16px">${tr(f.n)}</button>`).join('')}<label style="width:100%;font-size:12px">${tr('Text size')} <input type="range" id="ts" min="50" max="160" value="${S.fs}"></label></div><div class="panel"><b class="hd" style="width:100%">${tr('Ready-made drawings')}</b>${STAMPS.map(s=>`<button data-s="${s}">${s}</button>`).join('')}</div>`;
+ h.innerHTML='<div class="ttl">'+tr(STITLE[S.step])+'</div>'+x;h.classList.toggle('rows',S.step==1||S.step==2);curLayers();
+ h.querySelectorAll('.jar').forEach(b=>b.onclick=()=>pick(+b.dataset.i,b.dataset.t));
+ if(S.step==4){h.querySelectorAll('.panel [data-t]').forEach(b=>b.onclick=()=>{S.tool=b.dataset.t;mark()});
+  h.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{S.color=b.dataset.c;if(S.tool!='stamp')S.tool='pipe';h.querySelectorAll('[data-c]').forEach(d=>d.classList.toggle('on',d==b));mark()});
+  $('#ps').oninput=e=>S.ps=+e.target.value;$('#ts').oninput=e=>{S.fs=+e.target.value;redraw()};h.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{S.font=+b.dataset.f;h.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('on',x==b));redraw();fontLoad()});fontLoad();$('#tx').oninput=e=>{S.text=e.target.value;redraw()};$('#clr').onclick=()=>{S.strokes=[];S.stamps=[];redraw();hap()};h.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{S.tool='stamp';S.stamp=b.dataset.s;mark()});mark()}}
+function mark(){$('#tp').dataset.tool=S.tool;document.querySelectorAll('#shelf [data-s]').forEach(b=>b.classList.toggle('on',S.tool=='stamp'&&b.dataset.s==S.stamp));document.querySelectorAll('#shelf [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t==(S.tool=='place'?S.top:S.tool)))}
+function pick(i,t){hap();
+ if(S.step==0){S.size=SIZES[i];$('#tp').style.setProperty('--D',S.size.d+'px')}
+ if(S.step==1)S.type=TYPES[i];
+ if(S.step==2){S.layers.push({f:FILLS[i],off:Math.round(Math.random()*8-4),a:1})}
+ if(S.step==3){S.frost=FROSTS[i];S.fa=true}
+ if(S.step==4){S.tool='place';S.top=t;mark();return}
+ if(S.step!=2)shelf();stack();ui()}
+function stack(){curLayers();const st=$('#stack');st.innerHTML='';if(!S.size)return;const w=S.size.w;
+ const add=(css,h,ww,off,a,cl)=>{const d=document.createElement('div');d.className='ly '+(cl||'')+(a?' fall':'');d.style.cssText=`width:${ww}px;height:${h}px;left:${off}px;background:${css}`;st.appendChild(d)};
+ add(spCss(curType()),42,w,0,0,'s');
+ S.layers.forEach(l=>{add(fillCss(l.f),Math.round(l.f.h*(l.f.id=='sp'?1.2:1.1)),w+(l.f.id=='sp'?0:6),l.off,l.a,l.f.id=='sp'?'s':'f '+l.f.id);l.a=0});
+ if(S.frost){const f=document.createElement('div');f.className='frost'+(S.fa?' pour':'');f.style.background=frostSide(S.frost);st.appendChild(f);S.fa=false}}
+/* ===== PIPING CANVAS ===== */
+const cv=$('#cv'),cx=cv.getContext('2d'),tp=$('#tp');let drawing=0,cur=null;
+const shade=(h,f)=>{const n=parseInt(h.slice(1),16);return`rgb(${[n>>16,n>>8&255,n&255].map(v=>Math.round(v*f))})`};
+const pt=e=>{const r=tp.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*640,y:(e.clientY-r.top)/r.height*640}};
+function passes(c,w,fn){cx.lineCap=cx.lineJoin='round';
+ cx.save();cx.translate(2,w/4+2);cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=3;cx.strokeStyle='rgba(0,0,0,.25)';cx.lineWidth=w+2;fn();cx.restore();
+ cx.strokeStyle=shade(c,.78);cx.lineWidth=w;fn();cx.strokeStyle=c;cx.lineWidth=w*.78;fn();
+ cx.save();cx.translate(-w*.1,-w*.14);cx.strokeStyle='rgba(255,255,255,.4)';cx.lineWidth=Math.max(1.5,w*.22);fn();cx.restore()}
+function redraw(){cx.clearRect(0,0,640,640);
+ S.strokes.forEach(s=>{const p=s.pts,path=new Path2D;path.moveTo(p[0].x,p[0].y);
+  if(p.length==1)path.lineTo(p[0].x+.1,p[0].y);
+  for(let i=1;i<p.length-1;i++)path.quadraticCurveTo(p[i].x,p[i].y,(p[i].x+p[i+1].x)/2,(p[i].y+p[i+1].y)/2);
+  if(p.length>1)path.lineTo(p[p.length-1].x,p[p.length-1].y);passes(s.c,s.w,()=>cx.stroke(path))});
+ S.stamps.forEach(stampDraw);textDraw();if(false){let fs=110;cx.font=`600 ${fs}px ${FF()}`;const m=cx.measureText(S.text).width;if(m>440)fs*=440/m;
+  cx.font=`600 ${fs}px ${FF()}`;cx.textAlign='center';cx.textBaseline='middle';passes(S.color==PIPE[0]?'#f7a8c0':S.color,7,()=>cx.strokeText(S.text,320,320))}}
+function eraseAt(p){const n=S.strokes.length+S.stamps.length;S.stamps=S.stamps.filter(s=>Math.hypot(s.x-p.x,s.y-p.y)>40);S.strokes=S.strokes.filter(s=>!s.pts.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<26));if(n!=S.strokes.length+S.stamps.length)redraw()}
+function deco(d){const e=document.createElement('div');e.className='dc';e.style.cssText=`left:${d.x*100}%;top:${d.y*100}%;--rot:${d.r}deg;width:${17*d.s}%`;e.innerHTML=sv(TOPS.find(t=>t.id==d.t).svg);$('#dcs').appendChild(e);
+ e.onpointerdown=ev=>{ev.stopPropagation();if(S.tool=='erase'){S.decos=S.decos.filter(z=>z!=d);e.remove();hap();return}
+  e.setPointerCapture(ev.pointerId);e.style.cursor='grabbing';e.onpointermove=m=>{const p=pt(m);d.x=Math.min(.95,Math.max(.05,p.x/640));d.y=Math.min(.95,Math.max(.05,p.y/640));e.style.left=d.x*100+'%';e.style.top=d.y*100+'%'};
+  e.onpointerup=()=>{e.onpointermove=null;e.style.cursor=''}};d.el=e}
+tp.onpointerdown=e=>{if(e.target.closest('.dc'))return;const p=pt(e);hap();
+ if(S.tool=='pipe'){cur={c:S.color,w:S.ps,pts:[p]};S.strokes.push(cur);S.hist.push(cur);drawing=1;tp.setPointerCapture(e.pointerId);redraw()}
+ else if(S.tool=='erase'){drawing=2;tp.setPointerCapture(e.pointerId);eraseAt(p)}
+ else if(S.tool=='stamp'){if(S.stamp){const st={t:S.stamp,x:p.x,y:p.y,c:S.color,k:S.fs/100};S.stamps.push(st);S.hist.push(st);redraw()}}else if(S.top){const d={t:S.top,x:p.x/640,y:p.y/640,r:Math.round(Math.random()*360),s:.9+Math.random()*.3};S.decos.push(d);S.hist.push(d);deco(d)}};
+tp.onpointermove=e=>{if(drawing==1){const p=pt(e),l=cur.pts[cur.pts.length-1];if(Math.hypot(p.x-l.x,p.y-l.y)>3){cur.pts.push(p);redraw()}}else if(drawing==2)eraseAt(pt(e))};
+tp.onpointerup=tp.onpointercancel=()=>{drawing=0;ui()};
+document.fonts&&document.fonts.ready.then(redraw);
+/* ===== FLOW ===== */
+const ok=()=>[S.size,S.type,S.layers.length,S.frost,1][S.step];
+function ui(){$('#steps').innerHTML=STEPS.map((s,i)=>`<span class="${i==S.step?'on':i<S.step?'done':''}">${i+1}. ${tr(s)}</span>`).join('');
+ $('#hint').textContent=tr(HINTS[S.step]);$('#next').disabled=!ok();$('#next').textContent=tr(S.step==4?'Review order ↗':'Next ↗');$('#back').disabled=S.step==0;
+ $('#undo').disabled=!(S.step==2&&S.layers.length||S.step==4&&(S.decos.length||S.strokes.length||S.stamps.length));
+ $('#sv').classList.toggle('off',S.step>=4);$('#tv').classList.toggle('on',S.step>=4);
+ const f=S.frost;if(f){tp.style.background=`radial-gradient(circle at 38% 32%,${f.l},${f.c} 55%,${f.d})`}}
+function go(n){S.step=n;$('#rc').classList.remove('open');$('#bar').classList.remove('hide');shelf();ui()}
+$('#next').onclick=()=>{hap();if(S.step<4)go(S.step+1);else{receipt();$('#rc').classList.add('open');$('#bar').classList.add('hide')}};
+$('#back').onclick=()=>go(S.step-1);
+$('#undo').onclick=()=>{hap();if(S.step==2){S.layers.pop();stack()}else if(S.step==4){while(S.hist.length){const o=S.hist.pop();let i=S.decos.indexOf(o);if(i>=0){S.decos.splice(i,1);o.el.remove();break}i=S.strokes.indexOf(o);if(i>=0){S.strokes.splice(i,1);redraw();break}i=S.stamps.indexOf(o);if(i>=0){S.stamps.splice(i,1);redraw();break}}}ui()};
+/* ===== RECEIPT ===== */
+function group(items,key,label,price){const m=new Map();items.forEach(x=>{const k=key(x);m.has(k)?m.get(k).n++:m.set(k,{n:1,x})});return[...m.values()].map(g=>({t:(g.n>1?g.n+' × ':'')+label(g.x),p:price(g.x)*g.n}))}
+function receipt(){const L=[{t:tr(S.size.name)+tr(' cake'),p:S.size.price},{t:tr(curType().name),p:curType().price},
+ ...group(S.layers,l=>l.f.id,l=>tr(l.f.name)+(l.f.id=='sp'?'':tr(' layer')),l=>l.f.price),{t:tr(S.frost.name)+tr(' frosting'),p:'ON US'}];
+ const ds=S.decos.map(d=>TOPS.find(t=>t.id==d.t));L.push(...group(ds,t=>t.id,t=>tr(t.name),t=>t.price));
+ if(S.strokes.length)L.push({t:tr('Piped drawing'),p:'ON US'});if(S.text.trim())L.push({t:tr('Lettering')+' "'+S.text.trim()+'"',p:'ON US'});
+ const sub=L.reduce((a,l)=>a+(typeof l.p=='number'?l.p:0),0);
+ $('#rc').innerHTML=`<h3>${brand()}</h3><p>${tr('ONE VERY LAYERED ORDER')}</p><hr>${L.map(l=>`<div class="ln"><span>${l.t}</span><span>${typeof l.p=='number'?fmt(l.p):tr(l.p)}</span></div>`).join('')}<hr>
+ <div class="ln t"><span>${tr('TOTAL')}</span><span id="tot"></span></div><label><input type="radio" name="dl" value="0" checked> ${tr('Pick up')}</label><label><input type="radio" name="dl" value="${DELIVERY}"> ${tr('Delivery')} +${fmt(DELIVERY)}</label>
+ <button class="go" id="co">${tr('Checkout ↗')}</button><a id="bk">${tr('← Back to decorating')}</a>`;
+ const t=()=>$('#tot').textContent=fmt(sub+ +document.querySelector('[name=dl]:checked').value);t();
+ document.querySelectorAll('[name=dl]').forEach(r=>r.onchange=t);$('#bk').onclick=()=>go(4);
+ $('#co').onclick=()=>{hap();const T=$('#tot').textContent;$('#rc').innerHTML=`<h3>${tr('Order placed!')}</h3><p>${tr('Thank you. This is a demo, no payment taken.')}</p><hr><div class="ln t"><span>${tr('ORDER')}</span><span>SL-${Math.floor(1000+Math.random()*9000)}</span></div><div class="ln"><span>${tr('TOTAL')}</span><span>${T}</span></div><a onclick="location.reload()">${tr('Build another cake')}</a>`}}
+document.addEventListener('change',e=>{if(e.target.name=='dl')window._d=e.target.value});
+/* ===== ORDERS, READY-MADE CAKES, STAMPS, WHATSAPP (edit here) ===== */
+const WA_SHOP='218920457694',WA_DRIVER='218912931359'; // WhatsApp numbers, digits only (shop gets every order; driver also gets delivery orders)
+const PRESETS=[ // t = index in TYPES, f = filling ids (for the mini picture)
+{name:'Lunch cake: classic filling',d:'Vanilla sponge, classic cream filling',price:12,t:0,f:['sp','car','sp']},
+{name:'Lunch cake: chocolate',d:'Chocolate sponge, classic filling',price:14,t:1,f:['sp','nut','sp']},
+{name:'Nutella hazelnut cake',d:'Chocolate, Nutella and crushed hazelnut',price:32,t:1,f:['sp','nut','sp','hz','sp']},
+{name:'Pistachio kunafa cake',d:'Pistachio cream and crispy kunafa',price:38,t:0,f:['sp','pis','sp','kun','sp']},
+{name:'Strawberry jam cake',d:'Vanilla with strawberry jam layers',price:28,t:0,f:['sp','jam','sp','jam','sp']}];
+const STAMPS=['Happy Birthday','Congrats','عيد ميلاد سعيد','مبروك','0','1','2','3','4','5','6','7','8','9','♥','★'];
+Object.assign(AR,{'Ready-made cakes':'كيكات جاهزة','Add to order':'أضف إلى الطلب','Order':'الطلب','Your order is empty':'طلبك فارغ','Your name':'الاسم','Your phone':'رقم هاتفك','Delivery address':'عنوان التوصيل','+ Add another cake':'+ أضف كيكة أخرى','← Back':'→ رجوع','Ready-made drawings':'رسومات جاهزة','Please fill in your name, phone, and address.':'يرجى إدخال الاسم والهاتف (والعنوان عند التوصيل).','Almost done!':'اقتربنا من الانتهاء!','Your order is NOT confirmed until you receive a reply on WhatsApp.':'لا يتم تأكيد طلبك إلا بعد وصول رد إليك على الواتساب.','Tap the button below, then press Send in WhatsApp.':'اضغط الزر أدناه ثم اضغط إرسال في الواتساب.','Send to the shop on WhatsApp':'أرسل الفاتورة للمحل عبر واتساب','Send to the delivery driver':'أرسل الفاتورة لمندوب التوصيل',
+'Lunch cake: classic filling':'كيك لانش بالحشوة الكلاسيكية','Lunch cake: chocolate':'كيك لانش بالشوكولاتة','Nutella hazelnut cake':'كيكة نوتيلا وبندق','Pistachio kunafa cake':'كيكة فستق وكنافة','Strawberry jam cake':'كيكة مربى الفراولة','Vanilla sponge, classic cream filling':'إسفنج فانيلا بحشوة كريمة كلاسيكية','Chocolate sponge, classic filling':'إسفنج شوكولاتة بحشوة كلاسيكية','Chocolate, Nutella and crushed hazelnut':'شوكولاتة ونوتيلا وبندق مطحون','Pistachio cream and crispy kunafa':'كريمة فستق وكنافة مقرمشة','Vanilla with strawberry jam layers':'فانيلا بطبقات مربى الفراولة'});
+const esc=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),strip=h=>{const d=document.createElement('div');d.innerHTML=h;return d.textContent};
+function stampDraw(st){let fs=(st.t.length>2?70:130)*(st.k||1);const f=()=>cx.font=`700 ${fs}px ${/[\u0600-\u06FF]/.test(st.t)?'"'+fnt().a+'",Cairo':'"'+fnt().l+'",Cairo,sans-serif'}`;f();const m=cx.measureText(st.t).width;if(m>440)fs*=440/m;f();cx.textAlign='center';cx.textBaseline='middle';pipeT(st.c=='#fffaf0'?'#f7a8c0':st.c,Math.max(4,fs/18),k=>k?cx.fillText(st.t,st.x,st.y):cx.strokeText(st.t,st.x,st.y),st.y-fs/2,st.y+fs/2)}
+function presets(){$('#rms').textContent=tr('Ready-made cakes')+' ▾';$('#rml').innerHTML=PRESETS.map((p,i)=>`<div class='rmc'><div class='mini'>${p.f.map(id=>`<i style='height:${id=='sp'?14:7}px;background:${id=='sp'?spCss(TYPES[p.t]):FILLS.find(f=>f.id==id).css}'></i>`).join('')}</div><b>${tr(p.name)}</b><small>${tr(p.d)}</small><span>${fmt(p.price)}</span><button data-d='${i}'>${tr('Decorate it')}</button><button class='alt' data-p='${i}'>${tr('Add to order')}</button></div>`).join('');
+ $('#rml').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{hap();S.cart.push({k:'p',p:PRESETS[+b.dataset.p]});cartUI();openRc()});$('#rml').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{hap();loadPreset(+b.dataset.d);$('#rm').open=false;window.scrollTo({top:0,behavior:'smooth'})})}
+function cartUI(){const n=S.cart.length,b=$('#cartb');b.style.display=n?'':'none';b.textContent=tr('Order')+' ('+n+')'}
+function openRc(){receipt();$('#rc').classList.add('open');$('#bar').classList.add('hide')}
+$('#cartb').onclick=openRc;
+function resetB(){Object.assign(S,{preset:null,size:null,type:null,layers:[],frost:null,decos:[],strokes:[],stamps:[],text:'',hist:[],tool:'pipe',top:null,stamp:null});$('#dcs').innerHTML='';tp.style.background='';tp.style.removeProperty('--D');redraw();stack()}
+function cakeLines(c){const L=c.preset?[{t:tr(c.preset.name),p:c.preset.price}]:[{t:tr(c.size.name)+tr(' cake'),p:c.size.price},{t:tr(c.type.name),p:c.type.price},...group(c.layers,l=>l.f.id,l=>tr(l.f.name)+(l.f.id=='sp'?'':tr(' layer')),l=>l.f.price),{t:tr(c.frost.name)+tr(' frosting'),p:'ON US'}];
+ L.push(...group(c.decos.map(d=>TOPS.find(t=>t.id==d.t)),t=>t.id,t=>tr(t.name),t=>t.price));if(c.strokes.length)L.push({t:tr('Piped drawing'),p:'ON US'});
+ const tx=[c.text.trim(),...c.stamps.map(s=>s.t)].filter(Boolean);if(tx.length)L.push({t:tr('Lettering')+' "'+esc(tx.join(' '))+'"',p:'ON US'});return L}
+const sumL=L=>L.reduce((a,l)=>a+(typeof l.p=='number'?l.p:0),0);
+function receipt(){const C=S.cart,rc=$('#rc'),pend=C.some(x=>x.pend);
+ const body=C.map((it,i)=>{const L=it.k=='c'?cakeLines(it.s):[{t:tr(it.p.name),p:it.p.price}];it.L=L;it.q=it.q||1;it.sub=sumL(L)*it.q;
+  return `<div class='ln hd2'><b>${tr('Cake')} ${i+1}</b><a data-x='${i}'>✕</a></div><div class='ln q'><span>${tr('Quantity')}</span><span><button data-q='${i}' data-d='-1'>−</button> <b>${it.q}</b> <button data-q='${i}' data-d='1'>+</button></span></div>`+L.map(l=>`<div class='ln'><span>${l.t}</span><span>${typeof l.p=='number'?fmt(l.p):tr(l.p)}</span></div>`).join('')+(it.q>1?`<div class='ln'><span>× ${it.q}</span><span>${fmt(it.sub)}</span></div>`:'')}).join('<hr>');
+ rc.innerHTML=`<h3>${brand()}</h3><p>${tr('ONE VERY LAYERED ORDER')}</p><hr>${body||'<p>'+tr('Your order is empty')+'</p>'}<hr><div class='ln t'><span>${tr('TOTAL')}</span><span id='tot'></span></div><div class='ln'><span>${tr('Pick up')}</span><span>-</span></div><p class='er' id='er'></p><button class='go' id='co'>${tr('Checkout ↗')}</button><a id='ad'>${tr('+ Add another cake')}</a><a id='bk'>${tr(pend?'← Back to decorating':'← Back')}</a>`;
+ const t=()=>{S.dl=0;$('#tot').textContent=fmt(C.reduce((a,i)=>a+i.sub,0)+S.dl*DELIVERY)};t();
+ 
+ rc.querySelectorAll('[data-x]').forEach(a=>a.onclick=()=>{S.cart.splice(+a.dataset.x,1);cartUI();receipt()});rc.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const it=S.cart[+b.dataset.q];it.q=Math.max(1,Math.min(50,(it.q||1)+ +b.dataset.d));receipt()});
+ $('#bk').onclick=()=>{const i=C.findIndex(x=>x.pend);if(i>=0)C.splice(i,1);cartUI();go(pend?4:S.step)};
+ $('#ad').onclick=()=>{const p=C.find(x=>x.pend);if(p){p.pend=0;resetB();go(0)}else go(S.step)};$('#co').onclick=checkout}
+function checkout(){const C=S.cart,c=S.cu;if(!C.length)return;
+ if(S.dl&&!S.loc&&!c.a.trim()){$('#er').textContent=tr('Please pick your location on the map or type your address.');return}
+ const tot=fmt(C.reduce((a,i)=>a+i.sub,0)+S.dl*DELIVERY),no='HK-'+Math.floor(1000+Math.random()*9000);
+ const msg=[`*${brand()}* | ${tr('ORDER')} ${no}`,'',...C.map((it,i)=>tr('Cake')+' '+(i+1)+((it.q||1)>1?' ×'+it.q:'')+':\n'+it.L.map(l=>'- '+strip(l.t)+' '+(typeof l.p=='number'?fmt(l.p):tr(l.p))).join('\n')),'',tr('TOTAL')+': '+tot,S.dl?tr('Delivery')+' +'+fmt(DELIVERY):tr('Pick up')].concat(S.dl?[...(S.loc?[tr('Location')+': https://www.google.com/maps?q='+S.loc.lat.toFixed(6)+','+S.loc.lng.toFixed(6)]:[]),...(c.a.trim()?[tr('Delivery address')+': '+c.a]:[])]:[]).join('\n');
+ const q=encodeURIComponent(msg),link=n=>`https://wa.me/${n}?text=${q}`;
+ $('#rc').innerHTML=`<h3>${tr('Almost done!')}</h3><p>${tr('ORDER')} ${no}</p><div class='ln t'><span>${tr('TOTAL')}</span><span>${tot}</span></div><div class='warn'>${tr('Your order is NOT confirmed until you receive a reply on WhatsApp.')}</div><p>${tr('Tap the button below, then press Send in WhatsApp.')}</p><a class='wa' target='_blank' rel='noopener' href='${link(WA_SHOP)}'>${tr('Send to the shop on WhatsApp')}</a>${S.dl?`<a class='wa' target='_blank' rel='noopener' href='${link(WA_DRIVER)}'>${tr('Send to the delivery driver')}</a>`:''}<a id='nw'>${tr('Build another cake')}</a>`;
+ $('#nw').onclick=()=>{S.cart=[];resetB();cartUI();go(0)}}
+$('#next').onclick=()=>{hap();if(S.step<4)go(S.step+1);else{S.cart=S.cart.filter(x=>!x.pend);S.cart.push({k:'c',pend:1,s:{preset:S.preset,size:S.size,type:S.type,layers:S.layers,frost:S.frost,decos:S.decos,strokes:S.strokes,stamps:S.stamps,text:S.text,font:S.font,fsz:S.fs,tc:S.color}});cartUI();openRc()}};
+/* ===== TEXT FONTS (edit here) + DECORATING READY-MADE CAKES ===== */
+const FONTS=[{n:'Rounded',l:'Fredoka',a:'Cairo'},{n:'Cursive',l:'Dancing Script',a:'Aref Ruqaa'},{n:'Vintage',l:'Yellowtail',a:'Lalezar'},{n:'Cake script',l:'Great Vibes',a:'Amiri'}],fnt=()=>FONTS[S.font],PFR=[0,2,2,3,1]; // l = Latin font, a = Arabic font; PFR = default frosting index per ready-made cake
+const fontLoad=()=>document.fonts&&Promise.all(FONTS.flatMap(f=>[f.l,f.a]).map(n=>document.fonts.load('700 40px "'+n+'"'))).then(redraw);
+Object.assign(AR,{'Text style':'نمط الخط','Text size':'حجم الكتابة','Nozzle size':'حجم الفوهة','Rounded':'مستدير','Cursive':'مائل','Vintage':'كلاسيكي','Cake script':'خط الكيك','Quantity':'الكمية','Decorate it':'زيّنها'});
+function textDraw(){const T=S.text.trim();if(!T)return;let fs=S.fs*1.1;const set=()=>cx.font=`700 ${fs}px ${FF()}`;set();let lines=[T];
+ if(cx.measureText(T).width>520&&T.includes(' ')){const w=T.split(' ');let best=1,bd=1e9;for(let i=1;i<w.length;i++){const d=Math.abs(w.slice(0,i).join(' ').length-w.slice(i).join(' ').length);if(d<bd){bd=d;best=i}}lines=[w.slice(0,best).join(' '),w.slice(best).join(' ')]}
+ const m=Math.max(...lines.map(l=>cx.measureText(l).width));if(m>520){fs*=520/m;set()}
+ cx.textAlign='center';cx.textBaseline='middle';const c=S.color==PIPE[0]?'#f7a8c0':S.color,lh=fs*1.05,y0=320-(lines.length-1)*lh/2;
+ pipeT(c,Math.max(3,fs/18),k=>lines.forEach((l,i)=>k?cx.fillText(l,320,y0+i*lh):cx.strokeText(l,320,y0+i*lh)),y0-lh/2,y0+lines.length*lh)}
+function loadPreset(i){const p=PRESETS[i],q=S.cart.find(x=>x.pend);if(q)q.pend=0;
+ Object.assign(S,{preset:p,size:SIZES[1],type:TYPES[p.t],layers:p.f.slice(1).map(id=>({f:FILLS.find(f=>f.id==id),off:Math.round(Math.random()*8-4),a:0})),frost:FROSTS[PFR[i]],decos:[],strokes:[],stamps:[],text:'',hist:[],tool:'pipe',top:null,stamp:null,fa:false});
+ $('#dcs').innerHTML='';tp.style.setProperty('--D',S.size.d+'px');redraw();stack();cartUI();go(4)}
+$('#back').onclick=()=>{if(S.step==4)S.preset=null;go(S.step-1)};
+/* ===== PIPED TEXT, DELIVERY MAP + GEOLOCATION ===== */
+const MAP_CENTER=[32.8872,13.1913]; // default map centre (Tripoli): change to your city
+Object.assign(AR,{'Use my location':'استخدم موقعي','Getting your location… please allow location access.':'جارٍ تحديد موقعك… يرجى السماح بالوصول إلى الموقع.','Location saved.':'تم حفظ موقعك.','Could not get your location. Turn on location in your phone settings and allow it for this page, then try again, or tap your spot on the map.':'تعذّر تحديد موقعك. فعّل خدمة الموقع في هاتفك واسمح بها لهذه الصفحة ثم حاول مجدداً، أو اضغط مكانك على الخريطة.','Location is not available here. Tap the map or type your address.':'خدمة الموقع غير متاحة هنا. اضغط على الخريطة أو اكتب عنوانك.','Please pick your location on the map or type your address.':'يرجى تحديد موقعك على الخريطة أو كتابة عنوانك.','Tap the map to set your delivery spot.':'اضغط على الخريطة لتحديد مكان التوصيل.','Location':'الموقع','The map could not load. Use the location button or type your address.':'تعذّر تحميل الخريطة. استخدم زر الموقع أو اكتب عنوانك.'});
+function pipeT(c,w,fn,y0,y1){cx.lineCap=cx.lineJoin='round';
+ cx.save();cx.translate(1.5,w/3+1.5);cx.shadowColor='rgba(0,0,0,.3)';cx.shadowBlur=3;cx.fillStyle=cx.strokeStyle='rgba(0,0,0,.25)';cx.lineWidth=w;fn(0);fn(1);cx.restore();
+ cx.strokeStyle=shade(c,.78);cx.lineWidth=w;fn(0);
+ const g=cx.createLinearGradient(0,y0,0,y1);g.addColorStop(0,shade(c,1.12));g.addColorStop(.55,c);g.addColorStop(1,shade(c,.88));cx.strokeStyle=cx.fillStyle=g;cx.lineWidth=w*.7;fn(0);fn(1)}
+let LL;const loadLeaflet=()=>LL||(LL=Promise.all([new Promise((ok,no)=>{const l=document.createElement('link');l.rel='stylesheet';l.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';l.onload=ok;l.onerror=no;document.head.appendChild(l)}),new Promise((ok,no)=>{if(window.L)return ok();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})]));
+function initMap(){const mp=$('#mp');if(!mp)return;if(mp._leaflet_id){S.map&&S.map.m.invalidateSize();return}
+ const fail=()=>{mp.style.display='none';$('#ca').style.display='block';$('#lm').textContent=tr('The map could not load. Use the location button or type your address.')};
+ loadLeaflet().then(()=>{if(!window.L)return fail();mp.style.display='block';const m=L.map(mp).setView(S.loc?[S.loc.lat,S.loc.lng]:MAP_CENTER,S.loc?16:12);let bad=0;
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).on('tileerror',()=>{if(++bad==4)fail()}).addTo(m);
+  const pin=L.divIcon({className:'',html:'<div class=pin></div>',iconSize:[26,26],iconAnchor:[13,26]});let mk=null;
+  const put=(a,b)=>{S.loc={lat:a,lng:b};if(mk)mk.setLatLng([a,b]);else mk=L.marker([a,b],{icon:pin}).addTo(m)};
+  if(S.loc)put(S.loc.lat,S.loc.lng);m.on('click',e=>{put(e.latlng.lat,e.latlng.lng);$('#lm').textContent=tr('Location saved.')});S.map={m,put};setTimeout(()=>m.invalidateSize(),350)}).catch(fail)}
+function locate(){const lm=$('#lm');if(!navigator.geolocation){lm.textContent=tr('Location is not available here. Tap the map or type your address.');$('#ca').style.display='block';return}
+ lm.textContent=tr('Getting your location… please allow location access.');
+ navigator.geolocation.getCurrentPosition(p=>{const a=p.coords.latitude,b=p.coords.longitude;if(S.map&&S.map.m.getContainer().isConnected){S.map.m.setView([a,b],16);S.map.put(a,b)}else S.loc={lat:a,lng:b};lm.textContent=tr('Location saved.')},
+ ()=>{lm.textContent=tr('Could not get your location. Turn on location in your phone settings and allow it for this page, then try again, or tap your spot on the map.');$('#ca').style.display='block'},{enableHighAccuracy:true,timeout:15000})}
+/* ===== PICK-UP ONLY: ARABIC WHATSAPP ORDER + CAKE PICTURES ===== */
+Object.assign(AR,{'Cake no.':'كيكة رقم','Layers from the bottom':'الطبقات من الأسفل للأعلى','Toppings':'الإضافات','Pictures of the cakes will follow in the next message.':'صور تزيين الكيكات ستصل في الرسالة التالية.','Order sent to WhatsApp':'تم إرسال الطلب إلى واتساب','Your order is NOT confirmed until we reply to your WhatsApp message.':'لا يتم تأكيد طلبك إلا بعد أن نردّ على رسالتك في واتساب.','Preparing cake pictures…':'جارٍ تجهيز صور الكيكات…','Last step: send the cake pictures so we can see your decorations. Tap the button, choose WhatsApp and the shop chat (or press and hold a picture to save it, then attach it).':'خطوة أخيرة: أرسل صور الكيكات لنرى تزيينك. اضغط الزر واختر واتساب ثم محادثة المحل (أو اضغط مطولاً على الصورة لحفظها ثم أرفقها).','Send cake pictures':'إرسال صور الكيكات','WhatsApp did not open? Tap here.':'لم يفتح واتساب؟ اضغط هنا.','Top view':'منظر علوي','Cutaway':'مقطع جانبي'});
+const COL={nut:'#4a2412',hz:'#b9854a',car:'#d98a2e',pis:'#9cc46f',kun:'#d9962f',jam:'#b52340',crm:'#f6ecd8'};
+function cakeData(it){if(it.k=='c'){const s=it.s;return{sz:s.size,ty:s.type,fr:s.frost,ly:s.layers.map(l=>l.f),s}}const p=it.p,i=PRESETS.indexOf(p);return{sz:SIZES[1],ty:TYPES[p.t],fr:FROSTS[PFR[i]],ly:p.f.slice(1).map(id=>FILLS.find(f=>f.id==id)),s:null}}
+const svgImg=t=>new Promise(r=>{const i=new Image(),d=new XMLSerializer().serializeToString(document.querySelector('svg defs'));i.onload=()=>r(i);i.onerror=()=>r(null);i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' width='120' height='120'>${d}${t.svg}</svg>`)});
+async function cakeCard(it,n,no){const d=cakeData(it),s=d.s,W=1100,H=620,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),K=LANG;let title,lines;LANG='ar';
+ try{const nm=x=>tr(x);title=nm('Cake no.')+' '+n+((it.q||1)>1?' ×'+it.q:'');
+  lines=[nm(d.sz.name)+' · '+nm(d.ty.name),nm('Layers from the bottom')+':',...[d.ty.name,...d.ly.map(f=>f.id=='sp'?d.ty.name:f.name)].map((x,i)=>(i+1)+'. '+nm(x)),nm('Frosting')+': '+nm(d.fr.name)];
+  if(s){const m=new Map();s.decos.forEach(o=>{const t=TOPS.find(t=>t.id==o.t);m.set(t.name,(m.get(t.name)||0)+1)});if(m.size)lines.push(nm('Toppings')+': '+[...m].map(([a,b])=>nm(a)+(b>1?' ×'+b:'')).join('، '));
+   const tx=[s.text.trim(),...s.stamps.map(x=>x.t)].filter(Boolean);if(tx.length)lines.push(nm('Lettering')+': '+tx.join(' '));if(s.strokes.length)lines.push(nm('Piped drawing'))}
+ }finally{LANG=K}
+ const cap=LANG=='ar'?0:0,Ar=AR['Top view'],Ac=AR['Cutaway'];
+ g.fillStyle='#fff5f7';g.fillRect(0,0,W,H);g.fillStyle='#fde4ec';g.fillRect(0,0,W,84);g.textBaseline='middle';
+ g.direction='rtl';g.textAlign='right';g.fillStyle='#3b1f1a';g.font='700 40px "Aref Ruqaa",Cairo';g.fillText(BRAND_AR,W-40,44);
+ g.direction='ltr';g.textAlign='left';g.font='700 24px "Space Mono",monospace';g.fillText(no,40,44);
+ g.direction='rtl';g.textAlign='center';g.font='700 32px Cairo';g.fillStyle='#d9668b';g.fillText(title,W/2,44);
+ const D=380,X=230,Y=340;g.save();g.shadowColor='rgba(60,30,20,.35)';g.shadowBlur=22;g.shadowOffsetY=10;g.beginPath();g.arc(X,Y,D/2+8,0,7);g.fillStyle='#fff8ee';g.fill();g.restore();
+ g.save();g.beginPath();g.arc(X,Y,D/2,0,7);g.clip();const fg=g.createRadialGradient(X-D*.12,Y-D*.18,10,X,Y,D/2);fg.addColorStop(0,d.fr.l);fg.addColorStop(.55,d.fr.c);fg.addColorStop(1,d.fr.d);g.fillStyle=fg;g.fillRect(X-D/2,Y-D/2,D,D);
+ if(s&&(s.strokes.length||s.stamps.length||s.text.trim())){const o={a:S.strokes,b:S.stamps,t:S.text,f:S.font,z:S.fs,c:S.color};S.strokes=s.strokes;S.stamps=s.stamps;S.text=s.text;S.font=s.font||0;S.fs=s.fsz||100;S.color=s.tc||S.color;redraw();g.drawImage(cv,X-D/2,Y-D/2,D,D);S.strokes=o.a;S.stamps=o.b;S.text=o.t;S.font=o.f;S.fs=o.z;S.color=o.c;redraw()}
+ if(s)for(const o of s.decos){const t=TOPS.find(t=>t.id==o.t),im=await svgImg(t);if(!im)continue;const w=D*.17*o.s;g.save();g.translate(X-D/2+o.x*D,Y-D/2+o.y*D);g.rotate(o.r*Math.PI/180);g.shadowColor='rgba(0,0,0,.4)';g.shadowBlur=6;g.shadowOffsetY=3;g.drawImage(im,-w/2,-w/2,w,w);g.restore()}
+ g.restore();g.fillStyle='#8a6a5e';g.font='600 22px Cairo';g.textAlign='center';g.fillText(Ar,X,H-24);g.fillText(Ac,600,H-24);
+ const tot=38+d.ly.reduce((a,f)=>a+f.h,0),kk=Math.min(1.5,330/tot),w=d.sz.w*.95;let y=520;g.fillStyle='rgba(0,0,0,.12)';g.beginPath();g.ellipse(600,522,w*.62,16,0,0,7);g.fill();
+ const layer=(col,h,ww)=>{const hh=h*kk;y-=hh;const gr=g.createLinearGradient(0,y,0,y+hh);gr.addColorStop(0,shade(col,1.15));gr.addColorStop(1,shade(col,.8));g.fillStyle=gr;g.beginPath();if(g.roundRect)g.roundRect(600-ww/2,y,ww,hh,6);else g.rect(600-ww/2,y,ww,hh);g.fill();const sh=g.createLinearGradient(600-ww/2,0,600+ww/2,0);sh.addColorStop(0,'rgba(0,0,0,.22)');sh.addColorStop(.45,'rgba(255,255,255,.25)');sh.addColorStop(1,'rgba(0,0,0,.25)');g.fillStyle=sh;g.fill()};
+ layer(d.ty.c,38,w);d.ly.forEach(f=>layer(f.id=='sp'?d.ty.c:COL[f.id],f.h,w+(f.id=='sp'?0:8)));layer(d.fr.c,12,w+4);
+ const fs=Math.min(26,Math.floor(470/(lines.length+1)/1.4));g.direction='rtl';g.textAlign='right';g.fillStyle='#3b1f1a';g.font='600 '+fs+'px Cairo';lines.forEach((l,i)=>g.fillText(l,W-40,130+i*fs*1.5,300));
+ return c}
+async function makePics(C,no){const out=[];for(let i=0;i<C.length;i++){const c=await cakeCard(C[i],i+1,no),b=await new Promise(r=>c.toBlob(r,'image/png'));out.push({file:new File([b],'cake-'+(i+1)+'.png',{type:'image/png'}),url:c.toDataURL('image/png')})}return out}
+async function sharePics(files){try{if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files});return}}catch(e){if(e&&e.name=='AbortError')return}
+ files.forEach(f=>{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()})}
+function checkout(){const C=S.cart;if(!C.length)return;cashier();const K=LANG,no='LC-'+Math.floor(1000+Math.random()*9000);let msg;LANG='ar'; // the shop always receives the order in Arabic
+ try{const ing=it=>{const d=cakeData(it);return tr('Layers from the bottom')+': '+[d.ty.name,...d.ly.map(f=>f.id=='sp'?d.ty.name:f.name)].map(x=>tr(x)).join(' - ')};
+  msg=[`*${brand()}* | ${tr('ORDER')} ${no}`,'',...C.map((it,i)=>{const L=it.k=='c'?cakeLines(it.s):[{t:tr(it.p.name),p:it.p.price}];return tr('Cake no.')+' '+(i+1)+((it.q||1)>1?' ×'+it.q:'')+':\n'+L.map(l=>'- '+strip(l.t)+' '+(typeof l.p=='number'?fmt(l.p):tr(l.p))).join('\n')+'\n'+ing(it)}),'',tr('TOTAL')+': '+fmt(C.reduce((a,i)=>a+i.sub,0)),tr('Pick up'),'',tr('Pictures of the cakes will follow in the next message.')].join('\n')}finally{LANG=K}
+ const link='https://wa.me/'+WA_SHOP+'?text='+encodeURIComponent(msg);window.open(link,'_blank'); // opens WhatsApp straight away
+ $('#rc').innerHTML=`<h3>${tr('Order sent to WhatsApp')}</h3><p>${tr('ORDER')} ${no}</p><div class='ln t'><span>${tr('TOTAL')}</span><span>${fmt(C.reduce((a,i)=>a+i.sub,0))}</span></div><div class='warn'>${tr('Your order is NOT confirmed until we reply to your WhatsApp message.')}</div><p id='pm'>${tr('Preparing cake pictures…')}</p><div id='pics'></div><a href='${esc(link)}' target='_blank' rel='noopener'>${tr('WhatsApp did not open? Tap here.')}</a><a id='nw'>${tr('Build another cake')}</a>`;
+ $('#nw').onclick=()=>{S.cart=[];resetB();cartUI();go(0)};
+ makePics(C,no).then(fs=>{const pm=$('#pm');if(!pm)return;pm.textContent=tr('Last step: send the cake pictures so we can see your decorations. Tap the button, choose WhatsApp and the shop chat (or press and hold a picture to save it, then attach it).');$('#pics').innerHTML=`<button class='go' id='sp'>${tr('Send cake pictures')}</button>`+fs.map(f=>`<img src='${f.url}' style='width:100%;margin:6px 0;border-radius:6px'>`).join('');$('#sp').onclick=()=>sharePics(fs.map(f=>f.file))}).catch(()=>{const pm=$('#pm');if(pm)pm.textContent=''})}
+/* ===== DESIGN: panel titles + new cream items ===== */
+const STITLE=['Choose your cake size','Choose your sponge','Build your cake: layers & fillings','Choose your frosting','Decorate your cake'];
+Object.assign(AR,{'Choose your cake size':'اختر حجم الكيكة','Choose your sponge':'اختر نوع الكيك','Build your cake: layers & fillings':'ابنِ كيكتك: الطبقات والحشوات','Choose your frosting':'اختر كريمة التغطية','Decorate your cake':'زيّن كيكتك','Cream filling':'حشوة الكريمة','Cream swirl':'وردة كريمة','Cream dots':'نقاط كريمة'});
+/* ===== NATURAL INGREDIENT ILLUSTRATIONS + SOUNDS ===== */
+Object.assign(AR,{'Strawberry slices':'شرائح فراولة','Cherries':'كرز'});
+function cakeSvg(i){const w=[50,66,82][i],n=[2,3,3][i],h=[30,40,48][i],x=60-w/2,y=64-h;let ls='',bd='';
+ for(let k=1;k<n;k++)ls+=`<path d='M${x} ${y+h*k/n}a${w/2} 6 0 0 0 ${w} 0' fill='none' stroke='${k%2?'#e8a5b4':'#e6c58a'}' stroke-width='2.2'/>`;
+ for(let k=0;k<=10;k++){const t=Math.PI*k/10;bd+=`<circle cx='${(60+(w/2-2)*Math.cos(t)).toFixed(1)}' cy='${(y+5.2*Math.sin(t)+.5).toFixed(1)}' r='2.3'/>`}
+ return `<svg viewBox='0 0 120 100'><ellipse cx='60' cy='93' rx='26' ry='4' fill='url(#gSt)'/><rect x='56' y='72' width='8' height='21' fill='url(#gStem)'/><ellipse cx='60' cy='70' rx='${w/2+9}' ry='6' fill='url(#gSt)'/><path d='M${x} ${y}v${h}a${w/2} 6 0 0 0 ${w} 0v-${h}z' fill='url(#gCk)'/>${ls}<ellipse cx='60' cy='${y}' rx='${w/2}' ry='6' fill='url(#gCkT)'/><g fill='#fffaf0' stroke='#e0cba3' stroke-width='.6'>${bd}</g></svg>`}
+const layerDeco=(id,x,y,w,h)=>{let s='';const cy=y+h/2;
+ if(id=='hz')for(let k=0;k<7;k++)s+=`<circle cx='${x+4+k*6.2}' cy='${cy+(k%2?1.5:-1.5)}' r='1.7' fill='${k%2?'#e0b070':'#7a4a22'}'/>`;
+ else if(id=='kun')for(let k=0;k<15;k++)s+=`<path d='M${x+2+k*3} ${y}v${h}' stroke='${k%2?'#f7cf86':'#b97a22'}' stroke-width='1'/>`;
+ else if(id=='jam')for(let k=0;k<8;k++)s+=`<circle cx='${x+3+k*5.4}' cy='${cy+(k%2?1.8:-1.8)}' r='1.1' fill='${k%2?'#ff8a95':'#6e0f25'}'/>`;
+ else if(id=='pis')for(let k=0;k<11;k++)s+=`<path d='M${x+2+k*4} ${y}v${h}' stroke='${k%2?'#c9e3a0':'#7ea34c'}' stroke-width='1.3'/>`;
+ else if(id=='nut'||id=='car')s+=`<rect x='${x}' y='${y+.5}' width='${w}' height='1.4' fill='#fff' opacity='.4'/>`;
+ else if(id=='sp')for(let k=0;k<9;k++)s+=`<circle cx='${x+3+k*5}' cy='${y+2+(k*37%Math.max(1,h-3))}' r='.7' fill='rgba(90,50,10,.35)'/>`;
+ return s};
+function sliceSvg(bands,top){const H=bands.reduce((a,b)=>a+b[1],0);let y=50,o='';
+ bands.forEach(([c,h,id])=>{y-=h;o+=`<rect x='8' y='${y}' width='44' height='${h}' fill='${c}'/><path d='M52 ${y}l12-6v${h}l-12 6z' fill='${shade(c,.74)}'/>`+layerDeco(id,8,y,44,h)});
+ const yt=50-H;return `<svg viewBox='0 0 72 56'>${o}<path d='M8 ${yt}l12-6h44l-12 6z' fill='${shade(top||bands[bands.length-1][0],1.08)}'/><path d='M8 ${yt}h44v${H}H8z' fill='none' stroke='rgba(60,30,10,.25)' stroke-width='.6'/></svg>`}
+const fillIcon=f=>{const sc=curType().c;return f.id=='sp'?sliceSvg([[sc,9,'sp'],['#fffaf0',3],[sc,9,'sp']]):dollopSvg(f.id)};
+TOPS.length=0;TOPS.push(
+{id:'st',name:'Strawberry',price:1.5,svg:`<path d='M30 55C15 45 8 31 12 21c3-8 12-8 18-5 6-3 15-3 18 5 4 10-3 24-18 34z' fill='url(#gS)'/><path d='M30 55C15 45 8 31 12 21c1-3 3-5 6-6-5 9-1 23 12 33z' fill='#6b0a1a' opacity='.28'/><g fill='#ffd978' stroke='#8a1424' stroke-width='.35'><ellipse cx='20' cy='28' rx='.9' ry='1.5'/><ellipse cx='26' cy='24' rx='.9' ry='1.5'/><ellipse cx='33' cy='24' rx='.9' ry='1.5'/><ellipse cx='40' cy='28' rx='.9' ry='1.5'/><ellipse cx='23' cy='34' rx='.9' ry='1.5'/><ellipse cx='30' cy='31' rx='.9' ry='1.5'/><ellipse cx='37' cy='34' rx='.9' ry='1.5'/><ellipse cx='27' cy='40' rx='.9' ry='1.5'/><ellipse cx='34' cy='40' rx='.9' ry='1.5'/><ellipse cx='30' cy='46' rx='.9' ry='1.5'/><ellipse cx='18' cy='34' rx='.9' ry='1.5'/><ellipse cx='42' cy='34' rx='.9' ry='1.5'/></g><path d='M16 26c1.5-5 5-8 10-8' stroke='#fff' stroke-opacity='.5' stroke-width='2.4' fill='none' stroke-linecap='round'/><path d='M30 19L19 12l9 1 2-6 2 6 9-1z' fill='url(#gL)'/><path d='M30 18v-7' stroke='#2f6b2a' stroke-width='2' stroke-linecap='round'/>`},
+{id:'ss',name:'Strawberry slices',price:1.5,svg:`<path d='M30 53C17 44 10 31 14 22c3-7 11-7 16-4 5-3 13-3 16 4 4 9-3 22-16 31z' fill='#d11f35'/><path d='M30 48C20 41 15 31 18 24c2-5 8-5 12-2 4-3 10-3 12 2 3 7-2 17-12 24z' fill='url(#gSl)'/><g stroke='#ff8f9c' stroke-width='.9' opacity='.75'><path d='M30 26v19M25 28l5 16M35 28l-5 16M21 30l9 12M39 30l-9 12'/></g><ellipse cx='30' cy='33' rx='2.6' ry='8' fill='#fff4f2' opacity='.75'/><g fill='#ffe08a'><ellipse cx='16' cy='27' rx='.8' ry='1.3'/><ellipse cx='44' cy='27' rx='.8' ry='1.3'/><ellipse cx='20' cy='42' rx='.8' ry='1.3'/><ellipse cx='40' cy='42' rx='.8' ry='1.3'/><ellipse cx='30' cy='51' rx='.8' ry='1.3'/></g><path d='M17 24c2-4 6-6 10-5' stroke='#fff' stroke-opacity='.55' stroke-width='2' fill='none' stroke-linecap='round'/>`},
+{id:'cy',name:'Cherries',price:1.5,svg:`<path d='M22 34Q24 14 38 6M40 36Q39 18 38 6' stroke='#5a7a2a' stroke-width='1.8' fill='none' stroke-linecap='round'/><circle cx='22' cy='41' r='11' fill='url(#gCh)'/><circle cx='41' cy='43' r='11' fill='url(#gCh)'/><ellipse cx='22' cy='32' rx='2.2' ry='1' fill='#4a0510' opacity='.7'/><ellipse cx='41' cy='34' rx='2.2' ry='1' fill='#4a0510' opacity='.7'/><ellipse cx='17.5' cy='36' rx='3.4' ry='2.1' fill='#fff' opacity='.6' transform='rotate(-35 17.5 36)'/><ellipse cx='36.5' cy='38' rx='3.4' ry='2.1' fill='#fff' opacity='.6' transform='rotate(-35 36.5 38)'/>`},
+{id:'ch',name:'Choc shavings',price:1.5,svg:`<g fill='none' stroke-linecap='round'><path d='M8 42q8-16 22-8' stroke='#35190a' stroke-width='7'/><path d='M8 42q8-16 22-8' stroke='#8a5530' stroke-width='2.2' opacity='.75' transform='translate(-.5 -2)'/><path d='M24 24q10-12 24-5' stroke='#35190a' stroke-width='6'/><path d='M24 24q10-12 24-5' stroke='#8a5530' stroke-width='2' opacity='.75' transform='translate(0 -1.5)'/><path d='M16 52q14-6 30 0' stroke='#35190a' stroke-width='6'/><path d='M16 52q14-6 30 0' stroke='#8a5530' stroke-width='2' opacity='.75' transform='translate(0 -1.5)'/></g>`},
+{id:'sp',name:'Sprinkles',price:1,svg:`<g stroke-linecap='round' stroke-width='2.8'><path d='M10 14l6 3' stroke='#f4a0b9'/><path d='M30 8l-2 7' stroke='#fff4e6'/><path d='M46 16l-6 4' stroke='#e6c46a'/><path d='M14 34l7-1' stroke='#9fd3c7'/><path d='M36 30l5 5' stroke='#f4a0b9'/><path d='M50 40l-7 2' stroke='#fff4e6'/><path d='M20 50l4-5' stroke='#e6c46a'/><path d='M40 52l6-3' stroke='#9fd3c7'/><path d='M26 24l3 6' stroke='#f4a0b9'/><path d='M8 48l5-3' stroke='#e6c46a'/><path d='M52 24l-3 5' stroke='#9fd3c7'/></g>`},
+{id:'pi',name:'Crushed pistachio',price:1.5,svg:`<g><path d='M8 20l6-4 5 3-2 6-7 1z' fill='#8cb35a'/><path d='M26 12l7-2 3 5-5 4-6-3z' fill='#a9cf72'/><path d='M42 22l7-3 4 5-4 5-7-2z' fill='#6f9a3e'/><path d='M18 36l7-3 4 5-4 5-7-2z' fill='#a9cf72'/><path d='M38 42l6-2 3 5-5 4-5-3z' fill='#8cb35a'/><path d='M24 52l5-2 3 4-4 3-5-2z' fill='#6f9a3e'/><path d='M10 10l3 0' stroke='#e6f2c8' stroke-width='1'/><path d='M9 19l4-2M43 21l4-2M19 35l4-2' stroke='#e6f2c8' stroke-width='1' opacity='.7'/></g>`},
+{id:'hz',name:'Hazelnut',price:1,svg:`<ellipse cx='30' cy='33' rx='16' ry='19' fill='url(#gH)'/><path d='M30 14C24 25 23 42 30 52M22 17c-5 10-5 24 2 34M38 17c5 10 5 24-2 34' stroke='#4b2a10' stroke-width='.8' fill='none' opacity='.45'/><ellipse cx='30' cy='49' rx='9' ry='4.5' fill='#d9b27a'/><ellipse cx='30' cy='49' rx='5' ry='2.2' fill='#b98a54'/><ellipse cx='23' cy='24' rx='4' ry='7' fill='#fff' opacity='.28' transform='rotate(18 23 24)'/>`},
+{id:'go',name:'Gold leaf',price:2,svg:`<path d='M8 30l9-12 8 4 7-9 9 8 8 3-3 10 6 9-12 2-6 8-9-6-11 2z' fill='url(#gG)' opacity='.95'/><path d='M14 28l8-6M30 22l6 5M24 40l9 3' stroke='#fff7c0' stroke-width='1' opacity='.7'/><path d='M40 46l5-4 5 2-2 5z' fill='url(#gG)'/>`},
+{id:'mc',name:'Macaron',price:2.5,svg:`<ellipse cx='30' cy='49' rx='21' ry='4' fill='#000' opacity='.16'/><path d='M9 44c0-4 9-6 21-6s21 2 21 6c0 3-9 5-21 5S9 47 9 44z' fill='#e9a5ba'/><path d='M10 37c0-2 9-3 20-3s20 1 20 3c0 3-9 4-20 4S10 40 10 37z' fill='#fff3e3'/><path d='M8 35C8 21 18 14 30 14s22 7 22 21c0 2-10 3-22 3S8 37 8 35z' fill='url(#gM)'/><g fill='#f6c1d0'><ellipse cx='11' cy='36' rx='3' ry='2'/><ellipse cx='17' cy='37.5' rx='3' ry='2'/><ellipse cx='24' cy='38' rx='3' ry='2'/><ellipse cx='31' cy='38' rx='3' ry='2'/><ellipse cx='38' cy='38' rx='3' ry='2'/><ellipse cx='45' cy='37' rx='3' ry='2'/><ellipse cx='50' cy='36' rx='2.4' ry='2'/></g><ellipse cx='22' cy='22' rx='8' ry='3.5' fill='#fff' opacity='.5' transform='rotate(-15 22 22)'/>`},
+{id:'fl',name:'Edible flower',price:2,svg:`<g transform='translate(30 30)' fill='url(#gF)' stroke='#e58aa8' stroke-width='.5'><path id='pt' d='M0 0C-9-6-9-19 0-21C9-19 9-6 0 0z'/><path d='M0 0C-9-6-9-19 0-21C9-19 9-6 0 0z' transform='rotate(72)'/><path d='M0 0C-9-6-9-19 0-21C9-19 9-6 0 0z' transform='rotate(144)'/><path d='M0 0C-9-6-9-19 0-21C9-19 9-6 0 0z' transform='rotate(216)'/><path d='M0 0C-9-6-9-19 0-21C9-19 9-6 0 0z' transform='rotate(288)'/><g stroke='#e9a0b8' stroke-width='.5' fill='none'><path d='M0-4v-13M0-4l-3-10M0-4l3-10' transform='rotate(0)'/><path d='M0-4v-13' transform='rotate(72)'/><path d='M0-4v-13' transform='rotate(144)'/><path d='M0-4v-13' transform='rotate(216)'/><path d='M0-4v-13' transform='rotate(288)'/></g><circle r='3.4' fill='#f6c445' stroke='#d9a21a'/><g stroke='#c98a1a' stroke-width='.6'><path d='M0 0l-4-3M0 0l4-3M0 0l-3 4M0 0l3 4M0 0v-5'/></g><g fill='#b8741a' stroke='none'><circle cx='-4' cy='-3' r='.9'/><circle cx='4' cy='-3' r='.9'/><circle cx='-3' cy='4' r='.9'/><circle cx='3' cy='4' r='.9'/><circle cy='-5' r='.9'/></g></g>`},
+{id:'dr',name:'Choc drizzle',price:1.5,svg:`<path d='M5 40C13 16 23 54 31 30S46 18 55 26' fill='none' stroke='#2c140a' stroke-width='5' stroke-linecap='round'/><path d='M5 40C13 16 23 54 31 30S46 18 55 26' fill='none' stroke='#9a6a48' stroke-width='1.4' stroke-opacity='.75' stroke-linecap='round' transform='translate(-1 -1.6)'/><circle cx='55' cy='27' r='3.2' fill='#2c140a'/>`},
+{id:'cs',name:'Cream swirl',price:1,svg:`<ellipse cx='30' cy='33' rx='24' ry='22' fill='#000' opacity='.12'/><circle cx='30' cy='30' r='23' fill='url(#gR)'/><g fill='none' stroke-linecap='round'><circle cx='30' cy='30' r='20' stroke='#e2cfa6' stroke-width='3.2' stroke-dasharray='3 1.8'/><circle cx='30' cy='30' r='14' stroke='#e2cfa6' stroke-width='3.2' stroke-dasharray='2.6 1.6'/><circle cx='30' cy='30' r='8.5' stroke='#e2cfa6' stroke-width='3' stroke-dasharray='2.2 1.4'/><g stroke='#fff' stroke-opacity='.75' stroke-width='1' transform='translate(-.9 -.9)'><circle cx='30' cy='30' r='20' stroke-dasharray='3 1.8'/><circle cx='30' cy='30' r='14' stroke-dasharray='2.6 1.6'/><circle cx='30' cy='30' r='8.5' stroke-dasharray='2.2 1.4'/></g></g><circle cx='30' cy='30' r='4' fill='url(#gR)' stroke='#e2cfa6' stroke-width='.8'/>`});
+let AC;const ac=()=>AC||(AC=new(window.AudioContext||window.webkitAudioContext)());
+function ding(t,f,d,v){const a=ac();[[1,1],[2.76,.45],[5.4,.2]].forEach(([r,m])=>{const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=f*r;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*m,t+.004);g.gain.exponentialRampToValueAtTime(.0001,t+d/r**.4);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.1)})}
+function noise(t,d,f,v){const a=ac(),b=a.createBuffer(1,Math.floor(a.sampleRate*d),a.sampleRate),x=b.getChannelData(0);for(let i=0;i<x.length;i++)x[i]=(Math.random()*2-1)*(1-i/x.length);const s=a.createBufferSource(),q=a.createBiquadFilter(),g=a.createGain();s.buffer=b;q.type='bandpass';q.frequency.value=f;g.gain.value=v;s.connect(q);q.connect(g);g.connect(a.destination);s.start(t)}
+function bell(){try{const a=ac();a.resume();const t=a.currentTime+.05;ding(t,1760,1.6,.22);ding(t+.32,2093,1.9,.2)}catch(e){}}
+function cashier(){try{const a=ac();a.resume();const t=a.currentTime+.02;noise(t,.09,1800,.5);noise(t+.1,.18,700,.35);ding(t+.2,2637,1.1,.25);ding(t+.3,3520,1.3,.22)}catch(e){}}
+function welcome(){let done=0;try{if(sessionStorage.bell)return}catch(e){}const go=()=>{if(done)return;done=1;removeEventListener('pointerdown',go);removeEventListener('keydown',go);try{sessionStorage.bell=1}catch(e){}bell()};
+ try{const a=ac();if(a.state=='running'){go();return}}catch(e){}addEventListener('pointerdown',go);addEventListener('keydown',go)}
+welcome();
+/* ===== FILLING ICONS (dollops on a saucer) + CURRENT LAYERS STRIP ===== */
+Object.assign(AR,{'Current layers':'الطبقات الحالية'});
+const DOL={nut:['#7a4528','#4a2412','#2e1408'],pis:['#d3e59a','#a8c864','#7ea34c'],crm:['#ffffff','#f4eddc','#ddd3bd'],car:['#f5be6a','#d98a2e','#a85f12'],jam:['#e0384f','#b3122b','#6e0f25']};
+function dollopSvg(id){const sau="<ellipse cx='32' cy='46' rx='27' ry='7' fill='#fff' stroke='#e2dccf'/><ellipse cx='32' cy='45' rx='20' ry='4.6' fill='#efe9de'/>";
+ if(id=='kun'){let s='';for(let k=0;k<26;k++)s+=`<path d='M${10+(k*37)%38} 46q${(k%5)*3-5} ${-20-(k%4)*3} ${12+(k%3)*7} 0' fill='none' stroke='${['#f3b64e','#c4791f','#f9d58c','#d98e2d'][k%4]}' stroke-width='1.7' stroke-linecap='round'/>`;return `<svg viewBox='0 0 64 56'>${sau}${s}</svg>`}
+ if(id=='hz'){const c=['#d9a566','#8a5a2c','#b9854a'];let s='';[[22,40],[34,41],[28,34],[40,36],[16,43],[30,44],[24,30],[36,29]].forEach(([x,y],k)=>s+=`<ellipse cx='${x}' cy='${y}' rx='5.5' ry='4.6' fill='${c[k%3]}' stroke='#5a3516' stroke-width='.4' transform='rotate(${k*40} ${x} ${y})'/>`);return `<svg viewBox='0 0 64 56'>${sau}${s}</svg>`}
+ const [a,b,c]=DOL[id]||DOL.nut;
+ return `<svg viewBox='0 0 64 56'>${sau}<path d='M11 45c0-9 9-14 21-14s21 5 21 14c0 4-9 6-21 6s-21-2-21-6z' fill='${c}'/><path d='M15 40c0-8 7-12 17-12s17 4 17 12c0 3-7 5-17 5s-17-2-17-5z' fill='${b}'/><path d='M20 33c0-6 5-9 12-9s12 3 12 9c0 2-5 4-12 4s-12-2-12-4z' fill='${b}'/><path d='M25 27c0-5 3-7 7-7s7 2 7 7c0 2-3 3-7 3s-7-1-7-3z' fill='${a}'/><path d='M30 21c1-5 4-8 6-9-1 3-1 6 0 9z' fill='${a}'/><g fill='none' stroke='#fff' stroke-opacity='.55' stroke-width='1.6' stroke-linecap='round'><path d='M17 40c3-4 8-6 14-6'/><path d='M22 32c3-3 6-4 10-4'/><path d='M27 26c2-2 3-2 5-2'/></g></svg>`}
+function curLayers(){const c=$('#cur');if(!c)return;const sc=curType().c,ic=f=>f.id=='sp'?sliceSvg([[sc,9,'sp'],['#fffaf0',3],[sc,9,'sp']]):dollopSvg(f.id);
+ c.innerHTML=`<b>${tr('Current layers')}</b><div class='cl'>${sliceSvg([[sc,12,'sp']])}${S.layers.map(l=>ic(l.f)).join('')}</div><button id='trb' title='${tr('Undo')}'><svg viewBox='0 0 24 24'><path d='M6 7h12l-1 13H7zM9 4h6l1 2H8z' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linejoin='round'/></svg></button>`;
+ $('#trb').onclick=()=>$('#undo').click()}
+/* ===== FLAT FILLING ICONS (replaces the tall dollops) ===== */
+function dollopSvg(id){const sau="<ellipse cx='32' cy='38' rx='29' ry='11' fill='#fff' stroke='#e2dccf'/><ellipse cx='32' cy='37' rx='24' ry='8.5' fill='#f1ece2'/>";
+ if(id=='kun'){let s='';for(let k=0;k<22;k++){const x=12+(k*29)%30,y=29+(k*13)%13;s+=`<path d='M${x} ${y}q5-4 10 0t10 1' fill='none' stroke='${['#f3b64e','#c4791f','#f9d58c','#d98e2d'][k%4]}' stroke-width='1.6' stroke-linecap='round'/>`}
+  return `<svg viewBox='0 0 64 56'><defs><clipPath id='kc'><ellipse cx='32' cy='36.5' rx='20' ry='7'/></clipPath></defs>${sau}<ellipse cx='32' cy='36.5' rx='20' ry='7' fill='#d9962f'/><g clip-path='url(#kc)'>${s}</g></svg>`}
+ if(id=='hz'){const c=['#d9a566','#8a5a2c','#b9854a'];let s='';[[22,37],[29,34],[37,35],[43,38],[27,40],[35,40],[19,40],[40,32]].forEach(([x,y],k)=>s+=`<ellipse cx='${x}' cy='${y}' rx='4.4' ry='3.6' fill='${c[k%3]}' stroke='#5a3516' stroke-width='.4' transform='rotate(${k*40} ${x} ${y})'/>`);return `<svg viewBox='0 0 64 56'>${sau}${s}</svg>`}
+ const [a,b,c]=DOL[id]||DOL.nut;
+ return `<svg viewBox='0 0 64 56'>${sau}<ellipse cx='32' cy='36.5' rx='21' ry='7.6' fill='${c}'/><ellipse cx='32' cy='36' rx='19' ry='6.6' fill='${b}'/><path d='M17 36c5-3 10-4 15-3s10 1 15 3' fill='none' stroke='${a}' stroke-width='1.4' stroke-linecap='round' opacity='.8'/><path d='M21 39c4-2 8-2 12-1.5' fill='none' stroke='${a}' stroke-width='1' opacity='.6'/><ellipse cx='25' cy='33.6' rx='6.5' ry='1.6' fill='#fff' opacity='.5' transform='rotate(-8 25 33.6)'/></svg>`}
+$('#lang').onclick=()=>{LANG=LANG=='ar'?'en':'ar';applyLang()};
+try{LANG=sessionStorage.lang||'en'}catch(e){}applyLang();
+</script></body></html>
